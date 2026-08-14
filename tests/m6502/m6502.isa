@@ -1,0 +1,130 @@
+AC_ISA(m6502) {
+
+  ac_format Type_Imp    = "%op:8";
+  ac_format Type_Imm    = "%op:8 %imm:8";
+  ac_format Type_ZP     = "%op:8 %zp:8";
+  ac_format Type_Abs    = "%op:8 %addr:16";
+  ac_format Type_Branch = "%op:8 %bdisp:8:s";
+
+  ac_instr<Type_Imp>    tax, txa, tay, tya, inx, dex, iny, dey, clc, sec, nop_op, brk_op;
+  ac_instr<Type_Imm>    lda_imm, ldx_imm, ldy_imm, adc_imm, sbc_imm, and_imm, ora_imm, eor_imm, cmp_imm, cpx_imm, cpy_imm;
+  ac_instr<Type_ZP>     lda_zp, sta_zp, ldx_zp, stx_zp, ldy_zp, sty_zp;
+  ac_instr<Type_Abs>    lda_abs, sta_abs, jmp_abs;
+  ac_instr<Type_Branch> bne, beq, bcs, bcc, bmi, bpl;
+
+  ISA_CTOR(m6502) {
+    tax.set_asm("tax");
+    tax.set_decoder(op = 0xAA);
+
+    txa.set_asm("txa");
+    txa.set_decoder(op = 0x8A);
+
+    tay.set_asm("tay");
+    tay.set_decoder(op = 0xA8);
+
+    tya.set_asm("tya");
+    tya.set_decoder(op = 0x98);
+
+    inx.set_asm("inx");
+    inx.set_decoder(op = 0xE8);
+
+    dex.set_asm("dex");
+    dex.set_decoder(op = 0xCA);
+
+    iny.set_asm("iny");
+    iny.set_decoder(op = 0xC8);
+
+    dey.set_asm("dey");
+    dey.set_decoder(op = 0x88);
+
+    clc.set_asm("clc");
+    clc.set_decoder(op = 0x18);
+
+    sec.set_asm("sec");
+    sec.set_decoder(op = 0x38);
+
+    nop_op.set_asm("nop");
+    nop_op.set_decoder(op = 0xEA);
+
+    brk_op.set_asm("brk");
+    brk_op.set_decoder(op = 0x00);
+
+    lda_imm.set_asm("lda #%imm");
+    lda_imm.set_decoder(op = 0xA9);
+
+    ldx_imm.set_asm("ldx #%imm");
+    ldx_imm.set_decoder(op = 0xA2);
+
+    ldy_imm.set_asm("ldy #%imm");
+    ldy_imm.set_decoder(op = 0xA0);
+
+    adc_imm.set_asm("adc #%imm");
+    adc_imm.set_decoder(op = 0x69);
+
+    sbc_imm.set_asm("sbc #%imm");
+    sbc_imm.set_decoder(op = 0xE9);
+
+    and_imm.set_asm("and #%imm");
+    and_imm.set_decoder(op = 0x29);
+
+    ora_imm.set_asm("ora #%imm");
+    ora_imm.set_decoder(op = 0x09);
+
+    eor_imm.set_asm("eor #%imm");
+    eor_imm.set_decoder(op = 0x49);
+
+    cmp_imm.set_asm("cmp #%imm");
+    cmp_imm.set_decoder(op = 0xC9);
+
+    cpx_imm.set_asm("cpx #%imm");
+    cpx_imm.set_decoder(op = 0xE0);
+
+    cpy_imm.set_asm("cpy #%imm");
+    cpy_imm.set_decoder(op = 0xC0);
+
+    lda_zp.set_asm("lda %zp");
+    lda_zp.set_decoder(op = 0xA5);
+
+    sta_zp.set_asm("sta %zp");
+    sta_zp.set_decoder(op = 0x85);
+
+    ldx_zp.set_asm("ldx %zp");
+    ldx_zp.set_decoder(op = 0xA6);
+
+    stx_zp.set_asm("stx %zp");
+    stx_zp.set_decoder(op = 0x86);
+
+    ldy_zp.set_asm("ldy %zp");
+    ldy_zp.set_decoder(op = 0xA4);
+
+    sty_zp.set_asm("sty %zp");
+    sty_zp.set_decoder(op = 0x84);
+
+    lda_abs.set_asm("lda %addr");
+    lda_abs.set_decoder(op = 0xAD);
+
+    sta_abs.set_asm("sta %addr");
+    sta_abs.set_decoder(op = 0x8D);
+
+    jmp_abs.set_asm("jmp %addr");
+    jmp_abs.set_decoder(op = 0x4C);
+
+    bne.set_asm("bne %bdisp");
+    bne.set_decoder(op = 0xD0);
+
+    beq.set_asm("beq %bdisp");
+    beq.set_decoder(op = 0xF0);
+
+    bcs.set_asm("bcs %bdisp");
+    bcs.set_decoder(op = 0xB0);
+
+    bcc.set_asm("bcc %bdisp");
+    bcc.set_decoder(op = 0x90);
+
+    bmi.set_asm("bmi %bdisp");
+    bmi.set_decoder(op = 0x30);
+
+    bpl.set_asm("bpl %bdisp");
+    bpl.set_decoder(op = 0x10);
+  };
+};

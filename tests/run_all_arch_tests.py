@@ -17,6 +17,8 @@ def main():
         ("aarch64", "aarch64_test_gen.py"),
         ("alpha",   "alpha_test_gen.py"),
         ("c6x",     "c6x_test_gen.py"),
+        ("m68k",    "m68k_test_gen.py"),
+        ("m6502",   "m6502_test_gen.py"),
         ("avr",     "avr_test_gen.py"),
         ("m8051",   "m8051_test_gen.py"),
     ]
@@ -44,7 +46,7 @@ def main():
 
     print("\n" + "=" * 72)
     if all_passed:
-        print(" [✓] ALL 12 ARCHITECTURES (ARM, RISC-V, MIPS, SPARC, PPC, x86, x86-64, AArch64, ALPHA, C6X, AVR, 8051) PASSED 100%!")
+        print(" [✓] ALL 14 ARCHITECTURES (ARM, RISC-V, MIPS, SPARC, PPC, x86, x86-64, AArch64, ALPHA, C6X, m68k, MOS 6502, AVR, 8051) PASSED 100%!")
     else:
         print(" [X] SOME TESTS FAILED")
     print("=" * 72)

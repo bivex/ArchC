@@ -1,0 +1,13 @@
+AC_ARCH(m68k) {
+  ac_mem DM:512M;
+  ac_regbank RD:8;
+  ac_regbank RA:8;
+  ac_reg sr;
+  ac_wordsize 32;
+  ac_fetchsize 16;
+
+  ARCH_CTOR(m68k) {
+    ac_isa("m68k.isa");
+    set_endian("big");
+  };
+};

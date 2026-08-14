@@ -1,0 +1,75 @@
+AC_ISA(m68k) {
+
+  ac_format Type_MoveQ    = "%op:4 %rd:3 %zero:1 %data:8:s";
+  ac_format Type_ALU_Reg  = "%op:4 %rd:3 %opmode:3 %mode:3 %reg:3";
+  ac_format Type_Quick    = "%op:4 %qdata:3 %s:1 %size:2 %mode:3 %reg:3";
+  ac_format Type_Branch   = "%op:4 %cond:4 %bdisp:8:s";
+  ac_format Type_Move_Mem = "%op:4 %size:2 %dst_reg:3 %dst_mode:3 %src_mode:3 %src_reg:3";
+  ac_format Type_Halt     = "%op:16";
+
+  ac_instr<Type_MoveQ>    moveq;
+  ac_instr<Type_ALU_Reg>  add_l, sub_l, mul_l, and_l, or_l, eor_l;
+  ac_instr<Type_Quick>    addq_l, subq_l;
+  ac_instr<Type_Branch>   bra, bne, beq, blt, bge;
+  ac_instr<Type_Move_Mem> move_to_mem, move_from_mem;
+  ac_instr<Type_Halt>     halt;
+
+  ac_asm_map reg {
+    "D"[0..7] = [0..7];
+    "A"[0..7] = [0..7];
+    "SP" = 7;
+  }
+
+  ISA_CTOR(m68k) {
+    moveq.set_asm("moveq #%data, D%rd");
+    moveq.set_decoder(op = 0x7, zero = 0);
+
+    add_l.set_asm("add.l D%reg, D%rd");
+    add_l.set_decoder(op = 0xD, opmode = 0x2, mode = 0x0);
+
+    sub_l.set_asm("sub.l D%reg, D%rd");
+    sub_l.set_decoder(op = 0x9, opmode = 0x2, mode = 0x0);
+
+    mul_l.set_asm("muls D%reg, D%rd");
+    mul_l.set_decoder(op = 0xC, opmode = 0x7, mode = 0x0);
+
+    and_l.set_asm("and.l D%reg, D%rd");
+    and_l.set_decoder(op = 0xC, opmode = 0x2, mode = 0x0);
+
+    or_l.set_asm("or.l D%reg, D%rd");
+    or_l.set_decoder(op = 0x8, opmode = 0x2, mode = 0x0);
+
+    eor_l.set_asm("eor.l D%reg, D%rd");
+    eor_l.set_decoder(op = 0xB, opmode = 0x2, mode = 0x0);
+
+    addq_l.set_asm("addq.l #%qdata, D%reg");
+    addq_l.set_decoder(op = 0x5, s = 0, size = 0x2, mode = 0x0);
+
+    subq_l.set_asm("subq.l #%qdata, D%reg");
+    subq_l.set_decoder(op = 0x5, s = 1, size = 0x2, mode = 0x0);
+
+    bra.set_asm("bra %bdisp");
+    bra.set_decoder(op = 0x6, cond = 0x0);
+
+    bne.set_asm("bne %bdisp");
+    bne.set_decoder(op = 0x6, cond = 0x6);
+
+    beq.set_asm("beq %bdisp");
+    beq.set_decoder(op = 0x6, cond = 0x7);
+
+    blt.set_asm("blt %bdisp");
+    blt.set_decoder(op = 0x6, cond = 0xD);
+
+    bge.set_asm("bge %bdisp");
+    bge.set_decoder(op = 0x6, cond = 0xC);
+
+    move_to_mem.set_asm("move.l D%src_reg, (A%dst_reg)");
+    move_to_mem.set_decoder(op = 0x2, size = 0x0, dst_mode = 0x2, src_mode = 0x0);
+
+    move_from_mem.set_asm("move.l (A%src_reg), D%dst_reg");
+    move_from_mem.set_decoder(op = 0x2, size = 0x0, dst_mode = 0x0, src_mode = 0x2);
+
+    halt.set_asm("illegal");
+    halt.set_decoder(op = 0x4AFC);
+  };
+};

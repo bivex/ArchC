@@ -1,0 +1,11 @@
+AC_ARCH(m6502) {
+  ac_mem DM:64K;
+  ac_reg a, x, y, sp_reg, status;
+  ac_wordsize 8;
+  ac_fetchsize 8;
+
+  ARCH_CTOR(m6502) {
+    ac_isa("m6502.isa");
+    set_endian("big");
+  };
+};
