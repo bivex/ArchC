@@ -1,13 +1,23 @@
-# ArchC STM32F103 (ARM Cortex-M3 / Blue Pill) Model & Verification Suite
+# ArchC STM32 (STMicroelectronics) Architecture Model & Verification Suite
 
-This directory contains a complete processor model for the STM32F103 microcontroller powered by the 32-bit ARM Cortex-M3 (ARMv7-M) core.
+## 🏭 STM32 (STMicroelectronics) — Мировой стандарт №1 для промышленности и устройств
 
-## Features
-- 32-bit ARMv7-M Thumb/Thumb-2 Architecture (`ac_wordsize 32`, `ac_fetchsize 16`, Little-Endian).
-- 16 32-bit General Purpose Registers (`R0`–`R15`, `R13`=SP, `R14`=LR, `R15`=PC).
-- Status Register `xPSR` (APSR flags `N`, `Z`, `C`, `V` + `T` Thumb bit).
-- Memory Map:
-  - 128 KB On-Chip Flash at `0x08000000`
-  - 20 KB On-Chip SRAM at `0x20000000`
-  - Peripherals and NVIC at `0x40000000` / `0xE000E000`
-- Native Little-Endian ELF32 (`EM_ARM = 40 = 0x28`, `EF_ARM_EABI_VER5`) loader support.
+- **Архитектура:** ARM Cortex-M0+ / M3 / M4 / M7 / M33 (ARMv7-M Thumb/Thumb-2, `ac_wordsize 32`, `ac_fetchsize 16`, Little-Endian).
+- **Популярные линейки:**
+  - **STM32G0 / STM32C0:** Копеечные чипы (от $0.3) для блоков питания, умных терморегуляторов, бытовой техники.
+  - **STM32F1 / STM32F4 / STM32G4:** Дроны (полетные контроллеры Betaflight), материнские платы 3D-принтеров, управление бесколлекторными двигателями, инверторы.
+  - **STM32H7:** Высокопроизводительные чипы (до 550 МГц, 2 ядра) — промышленная робототехника, осциллографы, сложная цифровая обработка сигналов (DSP).
+  - **STM32WL:** Со встроенным радиочипом LoRa — дальнобойные беспроводные счетчики (передача данных на 10–15 км).
+- **Почему в проде:** Железная устойчивость к помехам (EMC/ESD), гарантия выпуска одного и того же чипа на 10–15 лет вперед (Longevity Commitment), профессиональная среда отладки.
+
+---
+
+## ⚙️ Особенности модели STM32F103 («Blue Pill»)
+- **Ядро:** 32-битный ARM Cortex-M3 (ARMv7-M) с набором инструкций Thumb/Thumb-2.
+- **Регистры:** 16 регистров общего назначения (`R0`–`R15`, `R13`=SP, `R14`=LR, `R15`=PC).
+- **Флаги состояния:** Регистр `xPSR` (флаги APSR `N`, `Z`, `C`, `V` + `T` Thumb bit).
+- **Карта памяти:**
+  - 128 КБ встроенной Flash-памяти программ (`0x08000000`)
+  - 20 КБ встроенной быстрой оперативной памяти SRAM (`0x20000000`)
+  - Пространство периферии и NVIC (`0x40000000` / `0xE000E000`)
+- **Загрузчик ELF:** нативная поддержка Little-Endian ELF32 ARM с флагами `EF_ARM_EABI_VER5` (`EM_ARM = 40 = 0x28`).
