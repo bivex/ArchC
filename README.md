@@ -1,10 +1,6 @@
 # ArchC: Architecture Description Language
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/ArchC/ArchC/master/doc/archc_logo.png" alt="ArchC Logo" width="200" onerror="this.style.display='none'"/>
-</p>
-
-<p align="center">
   <b>A powerful open-source Architecture Description Language (ADL) based on SystemC</b><br>
   Automatically generates functional, compiled, and cycle-accurate processor simulators, binutils backends, and GDB debugger support from a single high-level specification.
 </p>
