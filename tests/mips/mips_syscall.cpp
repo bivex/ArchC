@@ -21,7 +21,7 @@ using namespace mips_parms;
 void mips_syscall::get_buffer(int argn, unsigned char* buf, unsigned int size) { }
 void mips_syscall::set_buffer(int argn, unsigned char* buf, unsigned int size) { }
 void mips_syscall::set_buffer_noinvert(int argn, unsigned char* buf, unsigned int size) { }
-int  mips_syscall::get_int(int argn) { }
+int  mips_syscall::get_int(int argn) { return 0; }
 void mips_syscall::set_int(int argn, int val) { }
 void mips_syscall::return_from_syscall() { }
 void mips_syscall::set_prog_args(int argc, char **argv) { } 
