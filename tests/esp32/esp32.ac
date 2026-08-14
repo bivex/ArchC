@@ -1,0 +1,12 @@
+AC_ARCH(esp32) {
+  ac_mem DM:512M;
+  ac_regbank AR:16;
+  ac_reg sar, lcount, lbeg, lend, ps;
+  ac_wordsize 32;
+  ac_fetchsize 32;
+
+  ARCH_CTOR(esp32) {
+    ac_isa("esp32.isa");
+    set_endian("little");
+  };
+};

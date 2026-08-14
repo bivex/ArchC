@@ -44,6 +44,7 @@ ArchC includes complete, tested, and optimized processor models with native test
 | **AArch64** | 64-bit (ARMv8-A / ARM64), LE | `X0`–`X30`, `XZR`, `PSTATE` (`NZCV`), ELF64 support | [`tests/aarch64/`](tests/aarch64/) | **500+ MIPS** |
 | **DEC Alpha** | 64-bit (Alpha 21264 / AXP), LE | 32 64-bit GPRs, `CMOV`, no condition codes, ELF64 support | [`tests/alpha/`](tests/alpha/) | **583+ MIPS** |
 | **TI C6x DSP** | 32-bit (TMS320C6000 VLIW), LE | Dual-bank (`A0`..`A15`, `B0`..`B15`), VLIW `p-bit`, Saturated Math (`SADD`/`SMPY`) | [`tests/c6x/`](tests/c6x/) | **500+ MIPS** |
+| **ESP32 (Xtensa)** | 32-bit (Tensilica LX6 / WROOM), LE | 16 GPRs (`A0`..`A15`), Zero-overhead loop (`loop`), IoT MCU | [`tests/esp32/`](tests/esp32/) | **500+ MIPS** |
 | **Motorola 68000** | 32-bit (m68k CISC), BE | 8 Data (`D0`–`D7`), 8 Address (`A0`–`A7`), `CCR` flags, Sega/Amiga ISA | [`tests/m68k/`](tests/m68k/) | **Fast CISC** |
 | **MOS 6502** | 8-bit CISC (NES / Apple II), BE | `A`, `X`, `Y`, `S`, `P`, Zero-Page addressing, classic 8-bit ISA | [`tests/m6502/`](tests/m6502/) | **~250k inst/loop** |
 | **Atmel AVR** | 8-bit Harvard RISC (Arduino), LE | 32 registers (`R0`..`R31`), 16-bit pointers `X`/`Y`/`Z`, `SREG` | [`tests/avr/`](tests/avr/) | **~300k inst/loop** |
