@@ -221,121 +221,62 @@ public:
 
 ///Reads a word
   inline ac_word read(uint32_t address) {
-  //printf("\n\nAC_MEMPORT::read-> address=%x", address);
-
-  sc_core::sc_time time = sc_core::sc_time(0, SC_NS);
-
-    storage->read(&aux_word, address, sizeof(ac_word) * 8,time,this->procId);
+    storage->read(&aux_word, address, sizeof(ac_word) * 8);
     if (!this->ac_mt_endian) {
       aux_word = byte_swap(aux_word);
     }
-    setTimeInfo (time);
     return aux_word;
   }
 
   ///Reads a byte
   inline uint8_t read_byte(uint32_t address) {
-    //printf("\n\nAC_MEMPORT::read_byte->address=%x", address);
-    sc_core::sc_time time = sc_core::sc_time(0, SC_NS);
-    storage->read(&aux_byte, address, 8,time,this->procId);
-    setTimeInfo (time);
+    storage->read(&aux_byte, address, 8);
     return aux_byte;
   }
 
   ///Reads half word
   inline ac_Hword read_half(uint32_t address) {
-
-    //printf("\n\nAC_MEMPORT::read_half address=%x", address);
-
-    sc_core::sc_time time = sc_core::sc_time(0, SC_NS);
-
-    storage->read(&aux_Hword, address, sizeof(ac_Hword) * 8,time,this->procId);
-
+    storage->read(&aux_Hword, address, sizeof(ac_Hword) * 8);
     if (!this->ac_mt_endian) {
       aux_Hword = convert_endian(sizeof(ac_Hword), aux_Hword, 0);
     }
-    setTimeInfo (time);
     return aux_Hword;
   }
   
 
   const ac_word *read_block(uint32_t address, unsigned l) {
-   
-      sc_core::sc_time time = sc_core::sc_time(0, SC_NS);
       ac_word *p = (ac_word*) buf.ptr8;
-
-      /*if (l % sizeof(ac_word))
-      { 
-        printf("Memory size not wordsize aligned\n");
-        exit(1);
-      }
-          
-      storage->read(p, address, sizeof(ac_word) * 8, l/sizeof(ac_word), time,this->procId);
-      setTimeInfo (time);
-      return p;
-      */
-    
-      
-
-      
-
       l = byte_to_word(l);
 
       for (unsigned i=0; i<l; i++)
       {
-        storage->read(&(p[i]), address+i*sizeof(ac_word), sizeof(ac_word) * 8,time,this->procId);
-        setTimeInfo (time);
+        storage->read(&(p[i]), address+i*sizeof(ac_word), sizeof(ac_word) * 8);
       }
-      
-
       return p;      
-
-      
-      
-      
   }
 
 
   //!Writing a word
     inline void write(uint32_t address, ac_word datum) {
-
-      //printf("\n\nAC_MEMPORT::write-> address=%x datum=%x", address, datum);
-
-      sc_core::sc_time time = sc_core::sc_time(0, SC_NS);
       aux_word = datum;
       if (!this->ac_mt_endian) {
-      aux_word = byte_swap(datum);
-
+        aux_word = byte_swap(datum);
       }
-      storage->write(&aux_word, address, sizeof(ac_word) * 8,time,this->procId);
-      setTimeInfo (time);
+      storage->write(&aux_word, address, sizeof(ac_word) * 8);
     }
 
    //!Writing a byte
     inline void write_byte(uint32_t address, uint8_t datum) {
-
-        //printf("\n\nAC_MEMPORT::write_byte->address=%x datum=%x", address, datum);
-
-        sc_core::sc_time time = sc_core::sc_time(0, SC_NS);
-        storage->write(&datum, address, 8,time,this->procId);
-        setTimeInfo (time);
+        storage->write(&datum, address, 8);
     }
 
     //!Writing a short int
     inline void write_half(uint32_t address, ac_Hword datum) {
-
-       //printf("\n\nAC_MEMPORT::write_half-> address=%x datum=%x", address, datum);
-
-       sc_core::sc_time time = sc_core::sc_time(0, SC_NS);
-
        aux_Hword = datum;
-
        if (!this->ac_mt_endian) {
           aux_Hword = convert_endian(sizeof(ac_Hword), datum, 0);
        }
-
-       storage->write(&aux_Hword, address, sizeof(ac_Hword) * 8,time,this->procId);
-       setTimeInfo (time);
+       storage->write(&aux_Hword, address, sizeof(ac_Hword) * 8);
     }
 
     void write_block(uint32_t address, const ac_word *d, unsigned length) {
