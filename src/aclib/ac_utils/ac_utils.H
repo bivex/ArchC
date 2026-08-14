@@ -152,6 +152,17 @@ unsigned int convert_endian(unsigned int size, unsigned int num,
 #endif
 
 // Loading binary application
+template <typename T>
+inline T ac_elf_swap(T val, bool match_endian) {
+    if (match_endian) return val;
+    T res = 0;
+    for (size_t i = 0; i < sizeof(T); i++) {
+        res = (res << 8) | ((val >> (i * 8)) & 0xFF);
+    }
+    return res;
+}
+
+// Loading binary application
 // int ac_load_elf(char* filename, unsigned char* data_mem, unsigned int
 // data_mem_size)
 /// Template wrapper class for memory access.
@@ -160,9 +171,7 @@ int ac_load_elf(ac_arch_ref<ac_word, ac_Hword> &ref, char *filename,
                 unsigned char *data_mem, unsigned int data_mem_size,
                 unsigned int &ac_heap_ptr, unsigned int &ac_start_addr,
                 bool match_endian) {
-    Elf32_Ehdr ehdr;
-    Elf32_Shdr shdr;
-    Elf32_Phdr phdr;
+    unsigned char e_ident[EI_NIDENT];
     int fd;
     unsigned int i;
     int is_dyn = 0;                 /* If executable has INTERP segment */
@@ -178,11 +187,157 @@ int ac_load_elf(ac_arch_ref<ac_word, ac_Hword> &ref, char *filename,
         exit(EXIT_FAILURE);
     }
 
-    // Test if it's an ELF file
-    if ((read(fd, &ehdr, sizeof(ehdr)) != sizeof(ehdr)) || // read header
-        (strncmp((char *)ehdr.e_ident, ELFMAG, 4) !=
-         0) || // test elf magic number
-        0) {
+    // Read identity array
+    if ((read(fd, e_ident, EI_NIDENT) != EI_NIDENT) ||
+        (strncmp((char *)e_ident, ELFMAG, 4) != 0)) {
+        close(fd);
+        return EXIT_FAILURE;
+    }
+
+    lseek(fd, 0, SEEK_SET);
+
+    // Support for 64-bit ELF
+    if (e_ident[EI_CLASS] == ELFCLASS64) {
+        Elf64_Ehdr ehdr64;
+        if (read(fd, &ehdr64, sizeof(ehdr64)) != sizeof(ehdr64)) {
+            close(fd);
+            return EXIT_FAILURE;
+        }
+
+        uint64_t e_entry = ac_elf_swap(ehdr64.e_entry, match_endian);
+        uint16_t e_type = ac_elf_swap(ehdr64.e_type, match_endian);
+        uint64_t e_phoff = ac_elf_swap(ehdr64.e_phoff, match_endian);
+        uint16_t e_phentsize = ac_elf_swap(ehdr64.e_phentsize, match_endian);
+        uint16_t e_phnum = ac_elf_swap(ehdr64.e_phnum, match_endian);
+        uint64_t e_shoff = ac_elf_swap(ehdr64.e_shoff, match_endian);
+        uint16_t e_shentsize = ac_elf_swap(ehdr64.e_shentsize, match_endian);
+        uint16_t e_shnum = ac_elf_swap(ehdr64.e_shnum, match_endian);
+        uint16_t e_shstrndx = ac_elf_swap(ehdr64.e_shstrndx, match_endian);
+
+        ac_start_addr = (unsigned int)e_entry;
+        if (ac_start_addr > data_mem_size) {
+            AC_ERROR("the start address of the application is beyond model memory\n");
+            close(fd);
+            exit(EXIT_FAILURE);
+        }
+
+        uint64_t elf64_size = 0;
+        if (e_type == ET_EXEC) {
+            AC_SAY("Reading ELF64 application file: " << filename);
+            for (unsigned int j = 0; j < e_phnum; j++) {
+                Elf64_Phdr phdr64;
+                lseek(fd, e_phoff + (uint64_t)e_phentsize * j, SEEK_SET);
+                if (read(fd, &phdr64, sizeof(phdr64)) != sizeof(phdr64)) {
+                    AC_ERROR("reading ELF64 program header\n");
+                    close(fd);
+                    exit(EXIT_FAILURE);
+                }
+
+                uint32_t segment_type = ac_elf_swap(phdr64.p_type, match_endian);
+                if (segment_type == PT_LOAD) {
+                    uint64_t p_vaddr = ac_elf_swap(phdr64.p_vaddr, match_endian);
+                    uint64_t p_memsz = ac_elf_swap(phdr64.p_memsz, match_endian);
+                    uint64_t p_filesz = ac_elf_swap(phdr64.p_filesz, match_endian);
+                    uint64_t p_offset = ac_elf_swap(phdr64.p_offset, match_endian);
+
+                    if (data_mem_size < p_vaddr + p_memsz) {
+                        AC_ERROR("not enough memory in ArchC model to load application.\n");
+                        close(fd);
+                        exit(EXIT_FAILURE);
+                    }
+
+                    if (ac_heap_ptr < p_vaddr + p_memsz)
+                        ac_heap_ptr = (unsigned int)(p_vaddr + p_memsz);
+
+                    if (p_vaddr + p_memsz > elf64_size)
+                        elf64_size = p_vaddr + p_memsz;
+
+                    lseek(fd, p_offset, SEEK_SET);
+                    if (read(fd, data_mem + p_vaddr, p_filesz) != (ssize_t)p_filesz) {
+                        AC_ERROR("reading ELF64 LOAD segment.\n");
+                        close(fd);
+                        exit(EXIT_FAILURE);
+                    }
+                    memset(data_mem + p_vaddr + p_filesz, 0, p_memsz - p_filesz);
+                }
+            }
+        } else if (e_type == ET_REL) {
+            AC_SAY("Reading ELF64 relocatable file: " << filename);
+            Elf64_Shdr shdr64;
+            lseek(fd, e_shoff + ((uint64_t)e_shstrndx * e_shentsize), SEEK_SET);
+            if (read(fd, &shdr64, sizeof(shdr64)) != sizeof(shdr64)) {
+                AC_ERROR("reading ELF64 section header\n");
+                close(fd);
+                exit(EXIT_FAILURE);
+            }
+
+            uint64_t str_size = ac_elf_swap(shdr64.sh_size, match_endian);
+            uint64_t str_offset = ac_elf_swap(shdr64.sh_offset, match_endian);
+            char *string_table = (char *)malloc(str_size);
+            lseek(fd, str_offset, SEEK_SET);
+            if (read(fd, string_table, str_size) != (ssize_t)str_size) {
+                AC_ERROR("reading ELF64 string table.\n");
+                free(string_table);
+                close(fd);
+                exit(EXIT_FAILURE);
+            }
+
+            for (unsigned int j = 0; j < e_shnum; j++) {
+                lseek(fd, e_shoff + (uint64_t)e_shentsize * j, SEEK_SET);
+                if (read(fd, &shdr64, sizeof(shdr64)) != sizeof(shdr64)) {
+                    AC_ERROR("reading ELF64 section header\n");
+                    free(string_table);
+                    close(fd);
+                    exit(EXIT_FAILURE);
+                }
+
+                uint32_t sh_name = ac_elf_swap(shdr64.sh_name, match_endian);
+                const char *sec_name = string_table + sh_name;
+                if (!strcmp(sec_name, ".text") || !strcmp(sec_name, ".data") || !strcmp(sec_name, ".bss")) {
+                    uint64_t tshoff = ac_elf_swap(shdr64.sh_offset, match_endian);
+                    uint64_t tshsize = ac_elf_swap(shdr64.sh_size, match_endian);
+                    uint64_t tshaddr = ac_elf_swap(shdr64.sh_addr, match_endian);
+
+                    if (tshsize == 0) continue;
+
+                    if (data_mem_size < tshaddr + tshsize) {
+                        AC_ERROR("not enough memory in ArchC model to load application.\n");
+                        free(string_table);
+                        close(fd);
+                        exit(EXIT_FAILURE);
+                    }
+
+                    if (ac_heap_ptr < tshaddr + tshsize)
+                        ac_heap_ptr = (unsigned int)(tshaddr + tshsize);
+
+                    if (!strcmp(sec_name, ".bss")) {
+                        memset(data_mem + tshaddr, 0, tshsize);
+                        break;
+                    }
+
+                    lseek(fd, tshoff, SEEK_SET);
+                    if (read(fd, data_mem + tshaddr, tshsize) != (ssize_t)tshsize) {
+                        AC_ERROR("reading ELF64 section.\n");
+                        free(string_table);
+                        close(fd);
+                        exit(EXIT_FAILURE);
+                    }
+                }
+            }
+            if (string_table) free(string_table);
+        }
+
+        ref.ac_dyn_loader.initiate(ac_start_addr, (unsigned int)elf64_size, data_mem_size, ac_heap_ptr, fd, match_endian);
+        close(fd);
+        return EXIT_SUCCESS;
+    }
+
+    // 32-bit ELF Header
+    Elf32_Ehdr ehdr;
+    Elf32_Shdr shdr;
+    Elf32_Phdr phdr;
+
+    if (read(fd, &ehdr, sizeof(ehdr)) != sizeof(ehdr)) {
         close(fd);
         return EXIT_FAILURE;
     }
