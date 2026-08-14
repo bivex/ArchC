@@ -108,7 +108,7 @@ void esp32::behavior() {
   IntRoutine = vet;
 
   if (has_delayed_load) {
-    DM_mport.load(delayed_load_program);
+    IROM_mport.load(delayed_load_program);
     ac_pc = ac_start_addr;
     has_delayed_load = false;
   }
@@ -281,7 +281,7 @@ void esp32::init(int ac, char *av[]) {
 
   args_t args = ac_init_args( ac, av);
   set_args(args.size, args.app_args);
-  DM_mport.load(args.app_filename);
+  IROM_mport.load(args.app_filename);
 #ifdef AC_VERIFY
   set_queue(av[0]);
 #endif
@@ -317,7 +317,7 @@ void esp32::stop(int status) {
 }
 
 void esp32::load(char* program) {
-  DM_mport.load(program);
+  IROM_mport.load(program);
 }
 
 void esp32::delayed_load(char* program) {

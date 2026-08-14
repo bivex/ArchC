@@ -35,6 +35,14 @@ public:
   ac_reg<unsigned> ac_id;
 
   //!Storage Devices.
+  ac_mem IROM;
+  ac_memport<esp32_parms::ac_word, esp32_parms::ac_Hword> IROM_mport;
+  ac_mem IRAM;
+  ac_memport<esp32_parms::ac_word, esp32_parms::ac_Hword> IRAM_mport;
+  ac_mem DRAM;
+  ac_memport<esp32_parms::ac_word, esp32_parms::ac_Hword> DRAM_mport;
+  ac_mem PSRAM;
+  ac_memport<esp32_parms::ac_word, esp32_parms::ac_Hword> PSRAM_mport;
   ac_mem DM;
   ac_memport<esp32_parms::ac_word, esp32_parms::ac_Hword> DM_mport;
   ac_regbank<16, esp32_parms::ac_word, esp32_parms::ac_Dword> AR;

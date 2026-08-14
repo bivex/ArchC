@@ -30,8 +30,8 @@ static const unsigned int AC_WORDSIZE = 32; 	 //!< Architecture wordsize in bits
 static const unsigned int AC_FETCHSIZE = 32; 	 //!< Architecture fetchsize in bits.
 static const unsigned int AC_MATCH_ENDIAN = 1; 	 //!< If the simulated arch match the endian with host.
 static const unsigned int AC_PROC_ENDIAN = 0; 	 //!< The simulated arch is big endian?
-static const unsigned int AC_RAMSIZE = 536870912U; 	 //!< Architecture RAM size in bytes (storage DM).
-static const unsigned int AC_RAM_END = 536870912U; 	 //!< Architecture end of RAM (storage DM).
+static const unsigned int AC_RAMSIZE = 4194304U; 	 //!< Architecture RAM size in bytes (storage IROM).
+static const unsigned int AC_RAM_END = 4194304U; 	 //!< Architecture end of RAM (storage IROM).
 
 
 //!Word type definitions.

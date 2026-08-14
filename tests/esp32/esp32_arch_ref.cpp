@@ -19,5 +19,5 @@
 //!/Default constructor.
 esp32_arch_ref::esp32_arch_ref(esp32_arch& arch) : ac_arch_ref<esp32_parms::ac_word, esp32_parms::ac_Hword>(arch),
   ac_pc(arch.ac_pc), ac_id(arch.ac_id),
-  DM(arch.DM_mport),   AR(arch.AR),   sar(arch.sar),   lcount(arch.lcount),   lbeg(arch.lbeg),   lend(arch.lend),   ps(arch.ps) {}
+  IROM(arch.IROM_mport),   IRAM(arch.IRAM_mport),   DRAM(arch.DRAM_mport),   PSRAM(arch.PSRAM_mport),   DM(arch.DM_mport),   AR(arch.AR),   sar(arch.sar),   lcount(arch.lcount),   lbeg(arch.lbeg),   lend(arch.lend),   ps(arch.ps) {}
 

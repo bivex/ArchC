@@ -1,7 +1,13 @@
 AC_ARCH(esp32) {
-  ac_mem DM:512M;
-  ac_regbank AR:16;
-  ac_reg sar, lcount, lbeg, lend, ps;
+  ac_mem IROM:4M;      // 4 MB External Flash Instruction Memory (0x400D0000)
+  ac_mem IRAM:128K;    // 128 KB Internal Instruction SRAM (0x40080000)
+  ac_mem DRAM:320K;    // 320 KB Internal Data SRAM (0x3FFB0000)
+  ac_mem PSRAM:4M;     // 4 MB External Pseudo-SRAM (0x3F800000 - WROVER/CAM)
+  ac_mem DM:512M;      // Unified 512 MB System/MMIO address space
+
+  ac_regbank AR:16;    // 16 32-bit Physical Address Registers (A0..A15)
+  ac_reg sar, lcount, lbeg, lend, ps; // System & Hardware Loop control registers
+
   ac_wordsize 32;
   ac_fetchsize 32;
 

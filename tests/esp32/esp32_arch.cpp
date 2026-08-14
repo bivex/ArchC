@@ -20,6 +20,14 @@ esp32_arch::esp32_arch() :
   ac_arch_dec_if<esp32_parms::ac_word, esp32_parms::ac_Hword>(esp32_parms::AC_MAX_BUFFER),
   ac_pc("ac_pc", 0),
   ac_id("ac_id", 0),
+  IROM("IROM", 4194304U),
+  IROM_mport(*this, IROM),
+  IRAM("IRAM", 131072U),
+  IRAM_mport(*this, IRAM),
+  DRAM("DRAM", 327680U),
+  DRAM_mport(*this, DRAM),
+  PSRAM("PSRAM", 4194304U),
+  PSRAM_mport(*this, PSRAM),
   DM("DM", 536870912U),
   DM_mport(*this, DM),
   AR("AR"),
@@ -32,8 +40,8 @@ esp32_arch::esp32_arch() :
   ac_mt_endian = esp32_parms::AC_MATCH_ENDIAN;
   ac_tgt_endian = esp32_parms::AC_PROC_ENDIAN;
 
-  INST_PORT = &DM_mport;
-  DATA_PORT = &DM_mport;
+  INST_PORT = &IROM_mport;
+  DATA_PORT = &IROM_mport;
 }
 
 int esp32_arch::globalId = 0;
