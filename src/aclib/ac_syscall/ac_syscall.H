@@ -51,6 +51,18 @@
 #include "ac_arch_ref.H"
 #include "ac_utils.H"
 
+#if defined(__APPLE__) || !defined(__GLIBC__)
+#ifndef stat64
+#define stat64 stat
+#endif
+#ifndef lstat64
+#define lstat64 lstat
+#endif
+#ifndef fstat64
+#define fstat64 fstat
+#endif
+#endif
+
 template <class ac_word, class ac_Hword> class ac_syscall {
 protected:
   ac_arch<ac_word, ac_Hword>& ref;

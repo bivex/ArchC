@@ -13,4 +13,4 @@ CC = compiler()
 #---------------------------------------------------------------------------
 OPT = -O3
 DEBUG = -g
-OTHER = -Wno-deprecated
+OTHER = -Wno-deprecated -std=c++17

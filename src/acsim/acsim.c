@@ -3343,7 +3343,7 @@ void CreateMakefile(){
   fprintf( output, "CC :=  %s", CC_PATH);
   fprintf( output, "OPT :=  %s", OPT_FLAGS);
   fprintf( output, "DEBUG :=  %s", DEBUG_FLAGS);
-  fprintf( output, "OTHER := -std=c++11 ");
+  fprintf( output, "OTHER := -std=c++17 ");
 
   //!< The guest arch is big endian?
   if ( ac_tgt_endian )

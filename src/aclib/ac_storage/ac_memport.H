@@ -545,7 +545,7 @@ public:
     if( is_addr ){
       addr = strtol(word.c_str(), NULL, 16);
       is_addr = 0;
-      if( is_text && first_addr ){
+      if( first_addr ){
         first_addr = 0;
         this->ac_start_addr = addr;
       }

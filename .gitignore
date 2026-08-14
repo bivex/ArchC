@@ -46,3 +46,5 @@ src/acsim/acsim
 src/actsim/actsim
 /config.cache
 /env.sh
+/install_local/
+*.x

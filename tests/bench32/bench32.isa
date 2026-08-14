@@ -1,0 +1,72 @@
+AC_ISA(bench32) {
+  ac_format Type_R = "%op:6 %rs:5 %rt:5 %rd:5 %shamt:5 %func:6";
+  ac_format Type_I = "%op:6 %rs:5 %rt:5 %imm:16";
+  ac_format Type_J = "%op:6 %addr:26";
+
+  ac_instr<Type_R> add, sub, and_op, or_op, xor_op, slt, sll, srl, nop;
+  ac_instr<Type_I> addi, andi, ori, lw, sw, beq, bne;
+  ac_instr<Type_J> j, halt;
+
+  ac_asm_map reg {
+    "$"[0..31] = [0..31];
+    "$zero" = 0;
+    "$sp" = 29;
+    "$ra" = 31;
+  }
+
+  ISA_CTOR(bench32) {
+    add.set_asm("add %rd, %rs, %rt");
+    add.set_decoder(op = 0x00, func = 0x20);
+
+    sub.set_asm("sub %rd, %rs, %rt");
+    sub.set_decoder(op = 0x00, func = 0x22);
+
+    and_op.set_asm("and %rd, %rs, %rt");
+    and_op.set_decoder(op = 0x00, func = 0x24);
+
+    or_op.set_asm("or %rd, %rs, %rt");
+    or_op.set_decoder(op = 0x00, func = 0x25);
+
+    xor_op.set_asm("xor %rd, %rs, %rt");
+    xor_op.set_decoder(op = 0x00, func = 0x26);
+
+    slt.set_asm("slt %rd, %rs, %rt");
+    slt.set_decoder(op = 0x00, func = 0x2A);
+
+    sll.set_asm("sll %rd, %rt, %shamt");
+    sll.set_decoder(op = 0x00, func = 0x00);
+
+    srl.set_asm("srl %rd, %rt, %shamt");
+    srl.set_decoder(op = 0x00, func = 0x02);
+
+    nop.set_asm("nop");
+    nop.set_decoder(op = 0x00, func = 0x01);
+
+    addi.set_asm("addi %rt, %rs, %imm");
+    addi.set_decoder(op = 0x08);
+
+    andi.set_asm("andi %rt, %rs, %imm");
+    andi.set_decoder(op = 0x0C);
+
+    ori.set_asm("ori %rt, %rs, %imm");
+    ori.set_decoder(op = 0x0D);
+
+    lw.set_asm("lw %rt, %imm(%rs)");
+    lw.set_decoder(op = 0x23);
+
+    sw.set_asm("sw %rt, %imm(%rs)");
+    sw.set_decoder(op = 0x2B);
+
+    beq.set_asm("beq %rs, %rt, %imm");
+    beq.set_decoder(op = 0x04);
+
+    bne.set_asm("bne %rs, %rt, %imm");
+    bne.set_decoder(op = 0x05);
+
+    j.set_asm("j %addr");
+    j.set_decoder(op = 0x02);
+
+    halt.set_asm("halt");
+    halt.set_decoder(op = 0x3F);
+  };
+};
