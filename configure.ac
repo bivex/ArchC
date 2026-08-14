@@ -62,19 +62,16 @@ AC_ARG_WITH(systemc,
 	AM_CONDITIONAL(HAVE_TLM2, true)
 	AC_DEFINE([HAVE_TLM2], [1], [Have TLM2])
 
-	EXPORT_SYSTEMC_LIB="$SYSTEMC/lib"
-	AS_IF([test ! -e "$EXPORT_SYSTEMC_LIB/libsystemc.so" ],
-		[
-		EXPORT_SYSTEMC_LIB="$SYSTEMC/lib-$TARGET_ARCH"
-		AS_IF([test ! -e "$EXPORT_SYSTEMC_LIB/libsystemc.so" ],
-			[
-			AS_IF([test ! -e "$EXPORT_SYSTEMC_LIB/libsystemc.dylib" ],
-			    [
- 			    AC_MSG_ERROR([systemc not found at $SYSTEMC. Exiting...])
- 			    ])
-			])
-		])
-	EXPORT_SYSTEMC_PKG="EXPORT_SYSTEMC_LIB/pkgconfig"
+	EXPORT_SYSTEMC_LIB=""
+	for candidate in "$SYSTEMC" "$SYSTEMC/lib64" "$SYSTEMC/lib" "$SYSTEMC/lib-$TARGET_ARCH"; do
+		if test -f "$candidate/libsystemc.so" || test -f "$candidate/libsystemc.dylib" || test -f "$candidate/libsystemc.a"; then
+			EXPORT_SYSTEMC_LIB="$candidate"
+			break
+		fi
+	done
+	AS_IF([test -z "$EXPORT_SYSTEMC_LIB"],
+		[AC_MSG_ERROR([systemc library not found at $SYSTEMC (checked $SYSTEMC, lib64, lib, lib-$TARGET_ARCH). Exiting...])])
+	EXPORT_SYSTEMC_PKG="$EXPORT_SYSTEMC_LIB/pkgconfig"
 
 	SYSTEMC_CFLAGS="-pthread  -I$SYSTEMC/include"
 	SYSTEMC_LIBS="-L$EXPORT_SYSTEMC_LIB -lsystemc"
