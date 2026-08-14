@@ -1,0 +1,12 @@
+AC_ARCH(arm) {
+  ac_mem DM:512M;
+  ac_regbank RB:16;
+  ac_reg CPSR;
+  ac_wordsize 32;
+  ac_fetchsize 32;
+
+  ARCH_CTOR(arm) {
+    ac_isa("arm.isa");
+    set_endian("little");
+  };
+};

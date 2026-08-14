@@ -1,0 +1,58 @@
+AC_ISA(arm) {
+
+  ac_format Type_DP  = "%cond:4 %op:2 %cmd:4 %s:1 %rn:4 %rd:4 %op2:12";
+  ac_format Type_MEM = "%cond:4 %op:2 %i:1 %p:1 %u:1 %b:1 %w:1 %l:1 %rn:4 %rd:4 %offset:12";
+  ac_format Type_BR  = "%cond:4 %op:3 %l:1 %offset:24:s";
+  ac_format Type_HLT = "%cond:4 %op:4 %imm:24";
+
+  ac_instr<Type_DP>  add, sub, mov, cmp_op, and_op, orr, eor;
+  ac_instr<Type_MEM> ldr, str;
+  ac_instr<Type_BR>  b, bl;
+  ac_instr<Type_HLT> hlt;
+
+  ac_asm_map reg {
+    "$"[0..15] = [0..15];
+    "r"[0..15] = [0..15];
+    "sp" = 13;
+    "lr" = 14;
+    "pc" = 15;
+  }
+
+  ISA_CTOR(arm) {
+    add.set_asm("add %rd, %rn, %op2");
+    add.set_decoder(op = 0x0, cmd = 0x4);
+
+    sub.set_asm("sub %rd, %rn, %op2");
+    sub.set_decoder(op = 0x0, cmd = 0x2);
+
+    mov.set_asm("mov %rd, %op2");
+    mov.set_decoder(op = 0x0, cmd = 0xD);
+
+    cmp_op.set_asm("cmp %rn, %op2");
+    cmp_op.set_decoder(op = 0x0, cmd = 0xA);
+
+    and_op.set_asm("and %rd, %rn, %op2");
+    and_op.set_decoder(op = 0x0, cmd = 0x0);
+
+    orr.set_asm("orr %rd, %rn, %op2");
+    orr.set_decoder(op = 0x0, cmd = 0xC);
+
+    eor.set_asm("eor %rd, %rn, %op2");
+    eor.set_decoder(op = 0x0, cmd = 0x1);
+
+    ldr.set_asm("ldr %rd, [%rn, %offset]");
+    ldr.set_decoder(op = 0x1, l = 0x1);
+
+    str.set_asm("str %rd, [%rn, %offset]");
+    str.set_decoder(op = 0x1, l = 0x0);
+
+    b.set_asm("b %offset");
+    b.set_decoder(op = 0x5, l = 0x0);
+
+    bl.set_asm("bl %offset");
+    bl.set_decoder(op = 0x5, l = 0x1);
+
+    hlt.set_asm("hlt");
+    hlt.set_decoder(op = 0xF);
+  };
+};
