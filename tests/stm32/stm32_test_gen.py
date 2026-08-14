@@ -44,6 +44,13 @@ def stm32_ldr(rt, rn, imm5): return thumb_mem(0x6, 1, imm5, rn, rt)
 
 def stm32_beq(bdisp):        return thumb_bcond(0xD, 0x0, bdisp)
 def stm32_bne(bdisp):        return thumb_bcond(0xD, 0x1, bdisp)
+def stm32_bcs(bdisp):        return thumb_bcond(0xD, 0x2, bdisp)
+def stm32_bcc(bdisp):        return thumb_bcond(0xD, 0x3, bdisp)
+def stm32_bmi(bdisp):        return thumb_bcond(0xD, 0x4, bdisp)
+def stm32_bpl(bdisp):        return thumb_bcond(0xD, 0x5, bdisp)
+def stm32_bge(bdisp):        return thumb_bcond(0xD, 0xA, bdisp)
+def stm32_blt(bdisp):        return thumb_bcond(0xD, 0xB, bdisp)
+
 def stm32_b(bdisp):          return thumb_bunc(bdisp)
 def stm32_bkpt():            return thumb_bkpt()
 
@@ -102,66 +109,179 @@ def write_elf_stm32(filename, instrs, entry=0x08000000):
         f.write(phdr)
         f.write(code_bytes)
 
-def gen_stm32_alu(outer_loops=250, inner_loops=200):
-    # R6=outer, R1=inner, R0=acc, R2=7, R3=11, R4=13, R5=17
+# 1. High-Performance ALU Benchmark (35M instructions)
+def gen_stm32_alu():
+    # 3-level nested loop: 125 * 200 * 200
     code = [
-        stm32_movs(6, outer_loops & 0xFF), # 0
-        stm32_movs(0, 0),                 # 1
-        stm32_movs(2, 7),                 # 2
-        stm32_movs(3, 11),                # 3
-        stm32_movs(4, 13),                # 4
-        stm32_movs(5, 17),                # 5
+        stm32_movs(6, 125),               # R6 = outer
+        stm32_movs(0, 0),                 # R0 = acc
+        stm32_movs(2, 7),                 # R2 = 7
+        stm32_movs(3, 11),                # R3 = 11
+        stm32_movs(4, 13),                # R4 = 13
+        stm32_movs(5, 17),                # R5 = 17
     ]
-    outer_start = len(code)               # 6
-    code.append(stm32_movs(1, inner_loops & 0xFF)) # 6: R1 = inner_loops
-    inner_start = len(code)               # 7
-    code.append(stm32_adds_reg(0, 0, 2))  # 7: R0 += R2
-    code.append(stm32_eors(0, 3))         # 8: R0 ^= R3
-    code.append(stm32_adds_reg(0, 0, 4))  # 9: R0 += R4
-    code.append(stm32_muls(0, 5))         # 10: R0 *= R5
-    code.append(stm32_adds_imm(2, 1))     # 11: R2 += 1
-    code.append(stm32_subs_imm(1, 1))     # 12: R1 -= 1
-    bne_inner_disp = inner_start - (len(code) + 2) # 7 - 15 = -8
-    code.append(stm32_bne(bne_inner_disp)) # 13
-    code.append(stm32_subs_imm(6, 1))     # 14: R6 -= 1
-    bne_outer_disp = outer_start - (len(code) + 2) # 6 - 17 = -11
-    code.append(stm32_bne(bne_outer_disp)) # 15
-    code.append(stm32_bkpt())             # 16
+    outer_start = len(code)
+    code.append(stm32_movs(7, 200))       # R7 = mid
+    mid_start = len(code)
+    code.append(stm32_movs(1, 200))       # R1 = inner
+    inner_start = len(code)
+    code.append(stm32_adds_reg(0, 0, 2))  # R0 += R2
+    code.append(stm32_eors(0, 3))         # R0 ^= R3
+    code.append(stm32_adds_reg(0, 0, 4))  # R0 += R4
+    code.append(stm32_muls(0, 5))         # R0 *= R5
+    code.append(stm32_adds_imm(2, 1))     # R2 += 1
+    code.append(stm32_subs_imm(1, 1))     # R1 -= 1
+    bne_inner_disp = inner_start - (len(code) + 2)
+    code.append(stm32_bne(bne_inner_disp))# loop inner
+    code.append(stm32_subs_imm(7, 1))     # R7 -= 1
+    bne_mid_disp = mid_start - (len(code) + 2)
+    code.append(stm32_bne(bne_mid_disp))  # loop mid
+    code.append(stm32_subs_imm(6, 1))     # R6 -= 1
+    bne_outer_disp = outer_start - (len(code) + 2)
+    code.append(stm32_bne(bne_outer_disp))# loop outer
+    code.append(stm32_bkpt())
     return code
 
-def gen_stm32_mem(outer_loops=200, inner_loops=200):
-    # R6=outer, R1=inner, R7=SP (0x20005000), R0=0x55, R2=0xAA
+# 2. High-Performance SRAM Memory Benchmark (25M instructions)
+def gen_stm32_mem():
+    # R7 = SRAM Pointer (0x20005000), 100 * 150 * 200
     code = [
-        stm32_movs(6, outer_loops & 0xFF), # 0
-        stm32_movs(0, 0x55),              # 1
-        stm32_movs(2, 0xAA),              # 2
+        stm32_movs(6, 100),               # R6 = outer
+        stm32_movs(0, 0x55),
+        stm32_movs(2, 0xAA),
     ]
-    outer_start = len(code)               # 3
-    code.append(stm32_movs(1, inner_loops & 0xFF)) # 3
-    inner_start = len(code)               # 4
-    code.append(stm32_str(0, 7, 0))       # 4: [R7 + 0] = R0
-    code.append(stm32_str(2, 7, 1))       # 5: [R7 + 4] = R2
-    code.append(stm32_ldr(3, 7, 0))       # 6: R3 = [R7 + 0]
-    code.append(stm32_ldr(4, 7, 1))       # 7: R4 = [R7 + 4]
-    code.append(stm32_adds_reg(3, 3, 4))  # 8: R3 = R3 + R4
-    code.append(stm32_adds_imm(0, 1))     # 9: R0 += 1
-    code.append(stm32_subs_imm(1, 1))     # 10: R1 -= 1
-    bne_inner_disp = inner_start - (len(code) + 2) # 4 - 13 = -9
-    code.append(stm32_bne(bne_inner_disp)) # 11
-    code.append(stm32_subs_imm(6, 1))     # 12: R6 -= 1
-    bne_outer_disp = outer_start - (len(code) + 2) # 3 - 15 = -12
-    code.append(stm32_bne(bne_outer_disp)) # 13
-    code.append(stm32_bkpt())             # 14
+    outer_start = len(code)
+    code.append(stm32_movs(5, 150))       # R5 = mid
+    mid_start = len(code)
+    code.append(stm32_movs(1, 200))       # R1 = inner
+    inner_start = len(code)
+    code.append(stm32_str(0, 7, 0))       # [R7 + 0] = R0
+    code.append(stm32_str(2, 7, 1))       # [R7 + 4] = R2
+    code.append(stm32_ldr(3, 7, 0))       # R3 = [R7 + 0]
+    code.append(stm32_ldr(4, 7, 1))       # R4 = [R7 + 4]
+    code.append(stm32_adds_reg(3, 3, 4))  # R3 = R3 + R4
+    code.append(stm32_adds_imm(0, 1))     # R0 += 1
+    code.append(stm32_subs_imm(1, 1))     # R1 -= 1
+    bne_inner_disp = inner_start - (len(code) + 2)
+    code.append(stm32_bne(bne_inner_disp))
+    code.append(stm32_subs_imm(5, 1))     # R5 -= 1
+    bne_mid_disp = mid_start - (len(code) + 2)
+    code.append(stm32_bne(bne_mid_disp))
+    code.append(stm32_subs_imm(6, 1))     # R6 -= 1
+    bne_outer_disp = outer_start - (len(code) + 2)
+    code.append(stm32_bne(bne_outer_disp))
+    code.append(stm32_bkpt())
+    return code
+
+# 3. DSP / FIR Filter Simulation (Multiply-Accumulate loop)
+def gen_stm32_dsp_fir():
+    # 200 * 200 * 8 = ~2.5M instructions
+    code = [
+        stm32_movs(6, 200),            # R6 = outer
+        stm32_movs(0, 0),              # Output accumulator
+        stm32_movs(2, 3),              # Filter coefficient h0
+        stm32_movs(3, 5),              # Filter coefficient h1
+        stm32_movs(4, 7),              # Signal sample x0
+        stm32_movs(5, 9),              # Signal sample x1
+    ]
+    outer_start = len(code)
+    code.append(stm32_movs(7, 200))    # R7 = mid
+    mid_start = len(code)
+    code.append(stm32_movs(1, 8))      # R1 = taps
+    inner_start = len(code)
+    code.append(stm32_muls(4, 2))      # x0 * h0
+    code.append(stm32_adds_reg(0, 0, 4)) # acc += x0*h0
+    code.append(stm32_muls(5, 3))      # x1 * h1
+    code.append(stm32_adds_reg(0, 0, 5)) # acc += x1*h1
+    code.append(stm32_adds_imm(4, 1))  # x0 += 1
+    code.append(stm32_subs_imm(1, 1))  # taps -= 1
+    bne_inner_disp = inner_start - (len(code) + 2)
+    code.append(stm32_bne(bne_inner_disp))
+    code.append(stm32_subs_imm(7, 1))  # R7 -= 1
+    bne_mid_disp = mid_start - (len(code) + 2)
+    code.append(stm32_bne(bne_mid_disp))
+    code.append(stm32_subs_imm(6, 1))  # R6 -= 1
+    bne_outer_disp = outer_start - (len(code) + 2)
+    code.append(stm32_bne(bne_outer_disp))
+    code.append(stm32_bkpt())
+    return code
+
+# 4. CRC-32 / Checksum Protocol Calculation (Industrial LoRa / CAN Packet)
+def gen_stm32_crc():
+    # 200 * 200 * 64 = ~20M instructions
+    code = [
+        stm32_movs(6, 200),            # R6 = outer
+        stm32_movs(0, 0xFF),           # Initial CRC
+        stm32_movs(2, 0x82),           # Polynomial term
+    ]
+    outer_start = len(code)
+    code.append(stm32_movs(7, 200))    # R7 = mid
+    mid_start = len(code)
+    code.append(stm32_movs(1, 64))     # Byte counter
+    inner_start = len(code)
+    code.append(stm32_eors(0, 1))      # CRC ^= byte
+    code.append(stm32_muls(0, 2))      # CRC *= poly
+    code.append(stm32_adds_imm(0, 3))  # CRC += 3
+    code.append(stm32_subs_imm(1, 1))  # bytes -= 1
+    bne_inner_disp = inner_start - (len(code) + 2)
+    code.append(stm32_bne(bne_inner_disp))
+    code.append(stm32_subs_imm(7, 1))  # R7 -= 1
+    bne_mid_disp = mid_start - (len(code) + 2)
+    code.append(stm32_bne(bne_mid_disp))
+    code.append(stm32_subs_imm(6, 1))  # packets -= 1
+    bne_outer_disp = outer_start - (len(code) + 2)
+    code.append(stm32_bne(bne_outer_disp))
+    code.append(stm32_bkpt())
+    return code
+
+# 5. Full Conditional Branch & Flags Verification
+def gen_stm32_cond_branch():
+    code = [
+        # Test 1: BEQ (equal)
+        stm32_movs(0, 10),
+        stm32_cmp(0, 10),              # Z=1
+        stm32_beq(1),                  # skip next instruction
+        stm32_bkpt(),                  # FAIL if not skipped
+
+        # Test 2: BNE (not equal)
+        stm32_movs(1, 20),
+        stm32_cmp(1, 10),              # Z=0
+        stm32_bne(1),                  # skip next instruction
+        stm32_bkpt(),                  # FAIL if not skipped
+
+        # Test 3: BCS (carry set)
+        stm32_movs(2, 255),
+        stm32_adds_imm(2, 5),          # C=1
+        stm32_bcs(1),                  # skip
+        stm32_bkpt(),                  # FAIL
+
+        # Test 4: BPL (positive)
+        stm32_movs(3, 50),
+        stm32_cmp(3, 10),              # N=0
+        stm32_bpl(1),                  # skip
+        stm32_bkpt(),                  # FAIL
+
+        # Test 5: Unconditional Branch
+        stm32_b(1),
+        stm32_bkpt(),                  # FAIL
+
+        # Test 6: Final Success Pass
+        stm32_movs(0, 0x42),           # Success code in R0
+        stm32_bkpt(),
+    ]
     return code
 
 def main():
-    print("=" * 65)
-    print(" ArchC STM32F103 (ARM Cortex-M3 / Blue Pill) Performance")
-    print("=" * 65)
+    print("=" * 70)
+    print(" ArchC STM32F103 (ARM Cortex-M3 / Blue Pill) Comprehensive Suite")
+    print("=" * 70)
 
     test_files = [
-        ("stm32_alu.elf", gen_stm32_alu(250, 200), write_elf_stm32),
-        ("stm32_mem.elf", gen_stm32_mem(200, 200), write_elf_stm32),
+        ("stm32_alu.elf",         gen_stm32_alu(),            write_elf_stm32),
+        ("stm32_mem.elf",         gen_stm32_mem(),            write_elf_stm32),
+        ("stm32_dsp_fir.elf",     gen_stm32_dsp_fir(),        write_elf_stm32),
+        ("stm32_crc.elf",         gen_stm32_crc(),            write_elf_stm32),
+        ("stm32_cond_branch.elf", gen_stm32_cond_branch(),    write_elf_stm32),
     ]
 
     sim = "./stm32.x"
@@ -177,7 +297,7 @@ def main():
 
         inst_count = stats.get("Number of instructions executed", "N/A")
         speed = stats.get("Simulation speed", "N/A")
-        print(f"  {tf:<15} | Number of instructions executed: {inst_count:<12} | Simulation speed: {speed}")
+        print(f"  {tf:<22} | Number of instructions executed: {inst_count:<12} | Simulation speed: {speed}")
 
 if __name__ == "__main__":
     main()
