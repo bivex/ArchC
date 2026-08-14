@@ -55,6 +55,8 @@ namespace ac_dynlink {
     rel = NULL;
     rela = NULL;
     use = AC_NO_RELOC;
+    size = 0;
+    match_endian = true;
   }
 
   void dynamic_relocations::setup(Elf32_Addr addr, Elf32_Word size, unsigned char *mem, 

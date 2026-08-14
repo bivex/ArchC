@@ -98,17 +98,17 @@ template<typename ac_word, typename ac_Hword> class ac_memport :
 
 private:
 
-  ac_inout_if* storage;
+  ac_inout_if* storage = nullptr;
 
-  ac_word aux_word;
-  ac_Hword aux_Hword;
-  uint8_t aux_byte;
+  ac_word aux_word = 0;
+  ac_Hword aux_Hword = 0;
+  uint8_t aux_byte = 0;
 
   ac_ptr buf;
-  int bytesPerBlock;
+  int bytesPerBlock = 0;
 
   sc_core::sc_time time_info;
-  unsigned int procId;
+  unsigned int procId = 0;
 
  // Byte Swap functions
   inline uint16_t byte_swap(uint16_t value) {

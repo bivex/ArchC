@@ -65,6 +65,11 @@ namespace ac_dynlink {
     finivecn = 0;
     mem = NULL;
     sched_copy = NULL;
+    load_addr = 0;
+    type = 0;
+    has_relocations = false;
+    pinterp = NULL;
+    match_endian = true;
     _rtld_global_patched = false;
     this->rtld_config = rtld_config;
   }
