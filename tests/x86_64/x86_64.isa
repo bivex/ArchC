@@ -1,0 +1,80 @@
+AC_ISA(x86_64) {
+
+  ac_format Type_RR  = "%opcode:8 %rex:4 %reg:4 %rm:4 %pad:12";
+  ac_format Type_RI  = "%opcode:8 %reg:4 %pad:4 %imm:16:s";
+  ac_format Type_RM  = "%opcode:8 %reg:4 %rm:4 %disp:16:s";
+  ac_format Type_J   = "%opcode:8 %offset:24:s";
+  ac_format Type_HLT = "%opcode:8 %pad:24";
+
+  ac_instr<Type_RR>  add_rr, sub_rr, and_rr, or_rr, xor_rr, mov_rr, imul_rr;
+  ac_instr<Type_RI>  mov_ri, add_ri, sub_ri, cmp_ri;
+  ac_instr<Type_RM>  mov_rm, mov_mr;
+  ac_instr<Type_J>   jmp, jne, je;
+  ac_instr<Type_HLT> hlt;
+
+  ac_asm_map reg {
+    "%"[0..15] = [0..15];
+    "rax" = 0;
+    "rcx" = 1;
+    "rdx" = 2;
+    "rbx" = 3;
+    "rsp" = 4;
+    "rbp" = 5;
+    "rsi" = 6;
+    "rdi" = 7;
+    "r"[8..15] = [8..15];
+  }
+
+  ISA_CTOR(x86_64) {
+    add_rr.set_asm("addq %reg, %rm");
+    add_rr.set_decoder(opcode = 0x01);
+
+    sub_rr.set_asm("subq %reg, %rm");
+    sub_rr.set_decoder(opcode = 0x29);
+
+    and_rr.set_asm("andq %reg, %rm");
+    and_rr.set_decoder(opcode = 0x21);
+
+    or_rr.set_asm("orq %reg, %rm");
+    or_rr.set_decoder(opcode = 0x09);
+
+    xor_rr.set_asm("xorq %reg, %rm");
+    xor_rr.set_decoder(opcode = 0x31);
+
+    mov_rr.set_asm("movq %reg, %rm");
+    mov_rr.set_decoder(opcode = 0x89);
+
+    imul_rr.set_asm("imulq %reg, %rm");
+    imul_rr.set_decoder(opcode = 0xAF);
+
+    mov_ri.set_asm("movq %imm, %reg");
+    mov_ri.set_decoder(opcode = 0xB8);
+
+    add_ri.set_asm("addq %imm, %reg");
+    add_ri.set_decoder(opcode = 0x81);
+
+    sub_ri.set_asm("subq %imm, %reg");
+    sub_ri.set_decoder(opcode = 0x83);
+
+    cmp_ri.set_asm("cmpq %imm, %reg");
+    cmp_ri.set_decoder(opcode = 0x3D);
+
+    mov_rm.set_asm("movq %disp(%rm), %reg");
+    mov_rm.set_decoder(opcode = 0x8B);
+
+    mov_mr.set_asm("movq %reg, %disp(%rm)");
+    mov_mr.set_decoder(opcode = 0x88);
+
+    jmp.set_asm("jmp %offset");
+    jmp.set_decoder(opcode = 0xE9);
+
+    jne.set_asm("jne %offset");
+    jne.set_decoder(opcode = 0x75);
+
+    je.set_asm("je %offset");
+    je.set_decoder(opcode = 0x74);
+
+    hlt.set_asm("hlt");
+    hlt.set_decoder(opcode = 0xF4);
+  };
+};

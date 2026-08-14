@@ -1169,7 +1169,10 @@ void CreateParmHeader() {
       fprintf( output, "typedef  long long ac_Sword; \t //!< Signed word.\n");
       fprintf( output, "typedef  int ac_SHword; \t //!< Signed half word.\n");
       fprintf( output, "typedef  unsigned int  ac_UHword; \t //!< Unsigned half word.\n");
-      fprintf( output, "typedef  unsigned int  ac_UHword; \t //!< Unsigned half word.\n");
+      fprintf( output, "typedef  unsigned int  ac_Hword; \t //!< Unsigned half word.\n");
+      fprintf( output, "typedef  unsigned __int128 ac_Dword; \t //!< Signed double word.\n");
+      fprintf( output, "typedef  unsigned __int128 ac_UDword; \t //!< Unsigned double word.\n");
+      fprintf( output, "typedef  __int128 ac_SDword; \t //!< Signed double word.\n");
       break;
     default:
       AC_ERROR("Wordsize not supported: %d\n", wordsize);

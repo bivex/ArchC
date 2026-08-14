@@ -13,6 +13,7 @@ def main():
         ("sparc",   "sparc_test_gen.py"),
         ("powerpc", "powerpc_test_gen.py"),
         ("i386",    "i386_test_gen.py"),
+        ("x86_64",  "x86_64_test_gen.py"),
         ("m8051",   "m8051_test_gen.py"),
     ]
 
