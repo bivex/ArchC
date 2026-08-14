@@ -40,8 +40,11 @@ ArchC includes complete, tested, and optimized processor models with native test
 | **SPARC** | 32-bit (SPARC V8), BE | 32 registers (`%g`, `%o`, `%l`, `%i`), `%psr` condition codes | [`tests/sparc/`](tests/sparc/) | **583+ MIPS** |
 | **PowerPC** | 32-bit (PPC32), BE | 32 GPRs, Condition Register (`CR`), Link & Count registers | [`tests/powerpc/`](tests/powerpc/) | **500+ MIPS** |
 | **Intel x86** | 32-bit (i386 CISC), LE | `EAX`–`EDI`, `EFLAGS` register, displacement addressing | [`tests/i386/`](tests/i386/) | **583+ MIPS** |
+| **Intel x86-64** | 64-bit (AMD64 / x64), LE | 16 64-bit GPRs (`RAX`..`R15`), `RFLAGS`, ELF64 support | [`tests/x86_64/`](tests/x86_64/) | **583+ MIPS** |
+| **AArch64** | 64-bit (ARMv8-A / ARM64), LE | `X0`–`X30`, `XZR`, `PSTATE` (`NZCV`), ELF64 support | [`tests/aarch64/`](tests/aarch64/) | **500+ MIPS** |
 | **DEC Alpha** | 64-bit (Alpha 21264 / AXP), LE | 32 64-bit GPRs, `CMOV`, no condition codes, ELF64 support | [`tests/alpha/`](tests/alpha/) | **583+ MIPS** |
 | **TI C6x DSP** | 32-bit (TMS320C6000 VLIW), LE | Dual-bank (`A0`..`A15`, `B0`..`B15`), VLIW `p-bit`, Saturated Math (`SADD`/`SMPY`) | [`tests/c6x/`](tests/c6x/) | **500+ MIPS** |
+| **Atmel AVR** | 8-bit Harvard RISC (Arduino), LE | 32 registers (`R0`..`R31`), 16-bit pointers `X`/`Y`/`Z`, `SREG` | [`tests/avr/`](tests/avr/) | **~300k inst/loop** |
 | **Intel 8051** | 8-bit Harvard Architecture | Separate `PM`/`DM`, `ACC`, `PSW`, `DPTR`, variable-length ISA | [`tests/m8051/`](tests/m8051/) | **~300k inst/loop** |
 | **Bench32** | 32-bit RISC Baseline, LE | Optimized baseline reference suite for profiling and bottlenecks | [`tests/bench32/`](tests/bench32/) | **513+ MIPS** |
 

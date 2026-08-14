@@ -1,0 +1,12 @@
+AC_ARCH(avr) {
+  ac_mem DM:64K;
+  ac_regbank RB:32;
+  ac_reg sreg, sp_reg;
+  ac_wordsize 8;
+  ac_fetchsize 16;
+
+  ARCH_CTOR(avr) {
+    ac_isa("avr.isa");
+    set_endian("little");
+  };
+};

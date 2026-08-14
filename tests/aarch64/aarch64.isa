@@ -1,0 +1,97 @@
+AC_ISA(aarch64) {
+
+  ac_format Type_DP_Reg      = "%op:8 %opt:3 %rm:5 %imm6:6 %rn:5 %rd:5";
+  ac_format Type_DP_Imm      = "%op:8 %imm14:14 %rn:5 %rd:5";
+  ac_format Type_LS_Imm      = "%op:8 %disp:14:s %rn:5 %rd:5";
+  ac_format Type_Branch_Cond = "%op:8 %imm19:19:s %o:1 %cond:4";
+  ac_format Type_Branch_Imm  = "%op:8 %imm24:24:s";
+  ac_format Type_Branch_Reg  = "%op:16 %rn:5 %pad:11";
+  ac_format Type_Halt        = "%op:8 %pad:24";
+
+  ac_instr<Type_DP_Reg>      add_reg, adds_reg, sub_reg, subs_reg, and_reg, orr_reg, eor_reg, mul_reg;
+  ac_instr<Type_DP_Imm>      add_imm, adds_imm, sub_imm, subs_imm, movz_imm;
+  ac_instr<Type_LS_Imm>      ldr_x, str_x, ldr_w, str_w;
+  ac_instr<Type_Branch_Cond> b_cond;
+  ac_instr<Type_Branch_Imm>  b_imm, bl_imm;
+  ac_instr<Type_Branch_Reg>  br_reg, ret_reg;
+  ac_instr<Type_Halt>        halt;
+
+  ac_asm_map reg {
+    "X"[0..30] = [0..30];
+    "XZR" = 31;
+    "W"[0..30] = [0..30];
+    "WZR" = 31;
+    "LR" = 30;
+  }
+
+  ISA_CTOR(aarch64) {
+    add_reg.set_asm("add X%rd, X%rn, X%rm");
+    add_reg.set_decoder(op = 0x8B, imm6 = 0x00);
+
+    adds_reg.set_asm("adds X%rd, X%rn, X%rm");
+    adds_reg.set_decoder(op = 0xAB, imm6 = 0x00);
+
+    sub_reg.set_asm("sub X%rd, X%rn, X%rm");
+    sub_reg.set_decoder(op = 0xCB, imm6 = 0x00);
+
+    subs_reg.set_asm("subs X%rd, X%rn, X%rm");
+    subs_reg.set_decoder(op = 0xEB, imm6 = 0x00);
+
+    and_reg.set_asm("and X%rd, X%rn, X%rm");
+    and_reg.set_decoder(op = 0x8A, imm6 = 0x00);
+
+    orr_reg.set_asm("orr X%rd, X%rn, X%rm");
+    orr_reg.set_decoder(op = 0xAA, imm6 = 0x00);
+
+    eor_reg.set_asm("eor X%rd, X%rn, X%rm");
+    eor_reg.set_decoder(op = 0xCA, imm6 = 0x00);
+
+    mul_reg.set_asm("mul X%rd, X%rn, X%rm");
+    mul_reg.set_decoder(op = 0x9B, imm6 = 0x00);
+
+    add_imm.set_asm("add X%rd, X%rn, #%imm14");
+    add_imm.set_decoder(op = 0x91);
+
+    adds_imm.set_asm("adds X%rd, X%rn, #%imm14");
+    adds_imm.set_decoder(op = 0xB1);
+
+    sub_imm.set_asm("sub X%rd, X%rn, #%imm14");
+    sub_imm.set_decoder(op = 0xD1);
+
+    subs_imm.set_asm("subs X%rd, X%rn, #%imm14");
+    subs_imm.set_decoder(op = 0xF1);
+
+    movz_imm.set_asm("movz X%rd, #%imm14");
+    movz_imm.set_decoder(op = 0xD2, rn = 31);
+
+    ldr_x.set_asm("ldr X%rd, [X%rn, #%disp]");
+    ldr_x.set_decoder(op = 0xF9);
+
+    str_x.set_asm("str X%rd, [X%rn, #%disp]");
+    str_x.set_decoder(op = 0xF8);
+
+    ldr_w.set_asm("ldr W%rd, [X%rn, #%disp]");
+    ldr_w.set_decoder(op = 0xB9);
+
+    str_w.set_asm("str W%rd, [X%rn, #%disp]");
+    str_w.set_decoder(op = 0xB8);
+
+    b_cond.set_asm("b.%cond %imm19");
+    b_cond.set_decoder(op = 0x54, o = 0);
+
+    b_imm.set_asm("b %imm24");
+    b_imm.set_decoder(op = 0x14);
+
+    bl_imm.set_asm("bl %imm24");
+    bl_imm.set_decoder(op = 0x94);
+
+    br_reg.set_asm("br X%rn");
+    br_reg.set_decoder(op = 0xD61F, pad = 0);
+
+    ret_reg.set_asm("ret");
+    ret_reg.set_decoder(op = 0xD65F, rn = 30, pad = 0);
+
+    halt.set_asm("halt");
+    halt.set_decoder(op = 0x7F);
+  };
+};

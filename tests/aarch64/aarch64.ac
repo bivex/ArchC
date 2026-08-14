@@ -1,0 +1,12 @@
+AC_ARCH(aarch64) {
+  ac_mem DM:512M;
+  ac_regbank RB:32;
+  ac_reg sp_reg, pstate;
+  ac_wordsize 64;
+  ac_fetchsize 32;
+
+  ARCH_CTOR(aarch64) {
+    ac_isa("aarch64.isa");
+    set_endian("little");
+  };
+};
