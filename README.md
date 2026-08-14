@@ -216,9 +216,28 @@ make -f Makefile.archc
 
 ---
 
+## ⚡ Benchmarking & Performance Profiling
+
+An automated benchmark and profiling testbench is available in [`tests/bench32/`](tests/bench32/):
+
+```bash
+cd tests/bench32
+python3 run_profiler.py
+```
+
+### Performance Summary (on Apple Silicon ARM64, SystemC 3.0.2):
+- **ALU Throughput**: ~150.4 MIPS
+- **Memory Operations**: ~119.3 MIPS
+- **Branch / Control Flow**: ~140.1 MIPS
+- **Decode Cache Advantage**: **5.5× speedup** over on-the-fly decoding (`-ndc`).
+- Detailed architectural analysis and bottleneck breakdown available in [`tests/bench32/README.md`](tests/bench32/README.md).
+
+---
+
 ## 📖 Documentation & Resources
 
 - [ArchC Official Website](http://www.archc.org)
+- [Performance & Benchmarking Guide](tests/bench32/README.md)
 - [TLM How-to Guide](doc/tlm_howto.txt)
 - [Porting Guide](doc/porting_to_2.txt)
 - [What's New in ArchC 2.x](doc/whats_new.txt)
