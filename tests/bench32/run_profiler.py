@@ -200,10 +200,11 @@ def main():
     ]
 
     configs = [
+        ("Optimized (--no-wait --no-curr-instr-id)", "-nw -nci"),
         ("Default (Direct Threading + Decode Cache + O3)", ""),
-        ("No Decode Cache (-ndc)", "-ndc"),
         ("No Direct Threading (-nt)", "-nt"),
         ("Full Decode Optimization (-fdc)", "-fdc"),
+        ("No Decode Cache (-ndc)", "-ndc"),
     ]
 
     all_results = {}

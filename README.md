@@ -226,10 +226,11 @@ python3 run_profiler.py
 ```
 
 ### Performance Summary (on Apple Silicon ARM64, SystemC 3.0.2):
-- **ALU Throughput**: ~150.4 MIPS
-- **Memory Operations**: ~119.3 MIPS
-- **Branch / Control Flow**: ~140.1 MIPS
-- **Decode Cache Advantage**: **5.5× speedup** over on-the-fly decoding (`-ndc`).
+- **ALU Throughput (Optimized)**: **~507.9 MIPS** (vs 154.3 MIPS baseline, **3.3× speedup**)
+- **Mixed Kernel (Compute/Mem)**: **~450.2 MIPS** (vs 136.6 MIPS baseline)
+- **Branch / Control Flow**: **~361.4 MIPS** (vs 142.4 MIPS baseline)
+- **Memory Operations (LW/SW)**: **~341.7 MIPS** (vs 119.7 MIPS baseline)
+- **Decode Cache Advantage**: **18× speedup** over on-the-fly decoding (`-ndc`).
 - Detailed architectural analysis and bottleneck breakdown available in [`tests/bench32/README.md`](tests/bench32/README.md).
 
 ---

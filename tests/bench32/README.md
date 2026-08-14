@@ -49,25 +49,30 @@ Measured on Apple Silicon (ARM64 macOS, SystemC 3.0.2, Clang C++17 `-O3`):
 ================================================================================
 Configuration                                 | Workload                 | MIPS       | Time (s)
 ================================================================================
-Default (Direct Threading + Decode Cache + O3) | ALU Intensive            |   150.39   |  0.266s
-Default (Direct Threading + Decode Cache + O3) | Memory Read/Write        |   119.30   |  0.201s
-Default (Direct Threading + Decode Cache + O3) | Branch & Control Flow    |   140.12   |  0.157s
-Default (Direct Threading + Decode Cache + O3) | Mixed Compute/Mem Kernel |   131.84   |  0.182s
+Optimized (--no-wait --no-curr-instr-id)      | ALU Intensive            |   507.86   |  0.079s
+Optimized (--no-wait --no-curr-instr-id)      | Memory Read/Write        |   341.67   |  0.070s
+Optimized (--no-wait --no-curr-instr-id)      | Branch & Control Flow    |   361.44   |  0.061s
+Optimized (--no-wait --no-curr-instr-id)      | Mixed Compute/Mem Kernel |   450.22   |  0.053s
 --------------------------------------------------------------------------------
-No Direct Threading (-nt)                     | ALU Intensive            |   140.09   |  0.286s
-No Direct Threading (-nt)                     | Memory Read/Write        |   107.47   |  0.223s
-No Direct Threading (-nt)                     | Branch & Control Flow    |   130.08   |  0.169s
-No Direct Threading (-nt)                     | Mixed Compute/Mem Kernel |   126.71   |  0.189s
+Default (Direct Threading + Decode Cache + O3) | ALU Intensive            |   154.27   |  0.259s
+Default (Direct Threading + Decode Cache + O3) | Memory Read/Write        |   119.72   |  0.200s
+Default (Direct Threading + Decode Cache + O3) | Branch & Control Flow    |   142.36   |  0.155s
+Default (Direct Threading + Decode Cache + O3) | Mixed Compute/Mem Kernel |   136.63   |  0.176s
 --------------------------------------------------------------------------------
-Full Decode Optimization (-fdc)               | ALU Intensive            |   147.42   |  0.271s
-Full Decode Optimization (-fdc)               | Memory Read/Write        |   112.55   |  0.213s
-Full Decode Optimization (-fdc)               | Branch & Control Flow    |   134.19   |  0.164s
-Full Decode Optimization (-fdc)               | Mixed Compute/Mem Kernel |   130.31   |  0.184s
+No Direct Threading (-nt)                     | ALU Intensive            |   144.67   |  0.276s
+No Direct Threading (-nt)                     | Memory Read/Write        |   113.39   |  0.212s
+No Direct Threading (-nt)                     | Branch & Control Flow    |   132.13   |  0.167s
+No Direct Threading (-nt)                     | Mixed Compute/Mem Kernel |   129.00   |  0.186s
 --------------------------------------------------------------------------------
-No Decode Cache (-ndc)                        | ALU Intensive            |    27.10   |  1.476s
-No Decode Cache (-ndc)                        | Memory Read/Write        |    30.60   |  0.784s
-No Decode Cache (-ndc)                        | Branch & Control Flow    |    32.35   |  0.680s
-No Decode Cache (-ndc)                        | Mixed Compute/Mem Kernel |    28.04   |  0.856s
+Full Decode Optimization (-fdc)               | ALU Intensive            |   147.90   |  0.270s
+Full Decode Optimization (-fdc)               | Memory Read/Write        |   114.16   |  0.210s
+Full Decode Optimization (-fdc)               | Branch & Control Flow    |   133.93   |  0.164s
+Full Decode Optimization (-fdc)               | Mixed Compute/Mem Kernel |   133.03   |  0.180s
+--------------------------------------------------------------------------------
+No Decode Cache (-ndc)                        | ALU Intensive            |    27.85   |  1.436s
+No Decode Cache (-ndc)                        | Memory Read/Write        |    30.57   |  0.785s
+No Decode Cache (-ndc)                        | Branch & Control Flow    |    32.68   |  0.673s
+No Decode Cache (-ndc)                        | Mixed Compute/Mem Kernel |    28.79   |  0.833s
 ================================================================================
 ```
 

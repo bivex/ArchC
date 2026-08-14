@@ -11,6 +11,6 @@ CC = compiler()
 #---------------------------------------------------------------------------
 # Compiler Flags
 #---------------------------------------------------------------------------
-OPT = -O3
+OPT = -O3 -march=native -fomit-frame-pointer
 DEBUG = -g
 OTHER = -Wno-deprecated -std=c++17
