@@ -10,10 +10,10 @@ class Dir
 {
 	public:
 		//fstream log;
-		int totalOfCaches, index_size, started;
+		int totalOfCaches = 0, index_size = 0, started = 0;
 		cacheMem cacheMemVector[MAX_NUMBER_OF_CACHES];
 		Dir();
-		Dir(int p){totalOfCaches=p;}
+		Dir(int p) : totalOfCaches(p), index_size(MAX_INDEX_SIZE), started(0) {}
 		virtual ~Dir();
 		void start(int, int);
 		bool checkValidation(int, uint32_t, int);

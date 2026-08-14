@@ -18,15 +18,9 @@ void cacheBlock::setStateBlock(char new_state)
 
 bool cacheBlock::checkValidation(uint32_t m_address)
 {
-    //cout << " address: " << address;
-    if(state == 'I')
+    if (state == 'I')
         return false;
-	if((m_address == address) && state != 'I'){
-        //cout << " retornou true"<<endl;
-		return true;
-	}
-    //cout << " retornou false"<<endl;
-	return false;
+    return (m_address == address);
 }
 
 

@@ -5,13 +5,13 @@
 class cacheMem
 {
 	public:
-		int numberCache;
-		int nWay;
-		int cacheModIndex;
-		cacheMem(){};
+		int numberCache = 0;
+		int nWay = 0;
+		int cacheModIndex = 0;
+		cacheBlock *blocks = nullptr;
+		cacheMem() : numberCache(0), nWay(0), cacheModIndex(0), blocks(nullptr) {}
 		void alocate_blocks(int index_size);
-		cacheMem(int n){nWay=n;};
-		cacheBlock *blocks;
+		cacheMem(int n) : numberCache(0), nWay(n), cacheModIndex(0), blocks(nullptr) {}
 		bool validate(uint32_t, int);
 		bool checkValidation(uint32_t, int);
 		bool invalidate(uint32_t, int);

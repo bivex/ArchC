@@ -58,7 +58,6 @@ bool cacheMem::invalidate(uint32_t address, int cacheBlockIndex)
             //cout << "INVALIDATE DIR: "<< numberCache << " cacheIndex: " << cacheBlockIndex+i  << " ADDR: " << address  <<endl;
             cacheModIndex = cacheBlockIndex+i;
 			blocks[cacheBlockIndex+i].invalidate();
-			i=nWay;
 			return true;
 		}
 	}

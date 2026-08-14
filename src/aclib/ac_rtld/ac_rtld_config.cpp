@@ -47,6 +47,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
+#include <new>
 
 /* Useful defines */
 
@@ -288,7 +289,7 @@ namespace ac_dynlink {
   {
     unsigned int ndx = 0;
 
-    *hashtable = new (hash_node*[HASHTABLE_SIZE]);
+    *hashtable = new (std::nothrow) hash_node*[HASHTABLE_SIZE];
 
     if (*hashtable == NULL)
       {
@@ -307,7 +308,7 @@ namespace ac_dynlink {
   {
     hash_node *newnode;
 
-    newnode = new hash_node;
+    newnode = new (std::nothrow) hash_node;
 
     if (newnode == NULL)
       {

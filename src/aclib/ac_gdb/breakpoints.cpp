@@ -61,7 +61,9 @@ Breakpoints::Breakpoints(int quant) {
       perror( "Couldn't allocate breakpoint array." );
       quantMax = 0;
     }
-  memset( bp, 255, sizeof(unsigned int)* quantMax );
+  else {
+    memset( bp, 255, sizeof(unsigned int)* quantMax );
+  }
   this->quant = 0; /* no breakpoints at start up */
 }
 
