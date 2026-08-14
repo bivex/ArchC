@@ -351,6 +351,12 @@ ac_decoder_full *ac_decoder_full::CreateDecoder(ac_dec_format *formats, ac_dec_i
   full -> instructions = instructions;
   full -> nFields = nFields;
   full -> prog_source = source;
+  full -> fields_table = new ac_dec_field*[nFields + 1]();
+  for (ac_dec_field* f = allFields; f != NULL; f = f->next) {
+    if (f->id <= nFields) {
+      full->fields_table[f->id] = f;
+    }
+  }
   
   return full;
 }
@@ -362,42 +368,34 @@ unsigned* ac_decoder_full::Decode(unsigned char *buffer, int quant)
   ac_dec_field *field = 0;
   long long field_value = 0;
   ac_dec_instr *instruction = NULL;
-  //char byte;
   static unsigned *fields = 0;
 
-  ac_decoder *chosenPath[64]; // usar uma constante = MAX_DECODER_DEPTH
+  ac_decoder *chosenPath[64];
   int chosenPathPos = 0;
   chosenPath[chosenPathPos] = d;
 
- //!Allocate the first time only
   if (!fields) {
     fields = new unsigned[decoder -> nFields];
   }
 
   while (d) {
     if (!field) {
-      field = decoder->fields->FindDecField(d -> check -> id);
+      field = (decoder->fields_table && d->check->id <= decoder->nFields) ? decoder->fields_table[d->check->id] : decoder->fields->FindDecField(d->check->id);
       field_value = decoder->prog_source->GetBits(buffer, &quant, field -> first_bit, field -> size, field -> sign);
     }
 
-    //fprintf(stderr, "Decoder - FieldName: %s ValueRequired: %d ValueFound: %d\n",
-    //        d -> check -> name, d -> check -> value, field_value);
-
     if (field_value == d -> check -> value) {
       if (d -> found) {
-        //fprintf(stderr, "Instruction %s has been found.\n", d -> found -> name);
         fields[d->check->id] = field_value;
         instruction = d->found;
         break;
       } else {
-        //fprintf(stderr, "Following d -> subcheck branch in the decoder tree. \n");
         chosenPath[++chosenPathPos] = d -> subcheck;
         fields[d->check->id] = field_value;
         d = d -> subcheck;
         field = 0;
       }
     } else {
-      //fprintf(stderr, "Following d->next branch in the decoder tree. \n");
       chosenPath[chosenPathPos] = d -> next;
       d = d -> next;
       if (d && d -> check -> id != field -> id)
@@ -405,7 +403,6 @@ unsigned* ac_decoder_full::Decode(unsigned char *buffer, int quant)
     }
 
     while ((d == NULL) && (chosenPathPos > 0)) {
-      //fprintf(stderr, "Backtracking in the decoder tree.\n");
       d = chosenPath[--chosenPathPos];
       chosenPath[chosenPathPos] = d -> next;
       d = d -> next;
@@ -418,7 +415,7 @@ unsigned* ac_decoder_full::Decode(unsigned char *buffer, int quant)
   if (instruction != NULL) {
     d = d->subcheck;
     while (d) {
-      field = decoder->fields->FindDecField(d -> check -> id);
+      field = (decoder->fields_table && d->check->id <= decoder->nFields) ? decoder->fields_table[d->check->id] : decoder->fields->FindDecField(d->check->id);
       field_value = decoder->prog_source->GetBits(buffer, &quant, field -> first_bit, field -> size, field -> sign);
       fields[d->check->id] = field_value;
       d = d->subcheck;

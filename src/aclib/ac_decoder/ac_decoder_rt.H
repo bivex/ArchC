@@ -175,6 +175,7 @@ struct ac_decoder_full {
   ac_decoder* decoder;
   ac_dec_format* formats;
   ac_dec_field* fields;
+  ac_dec_field** fields_table;
   ac_dec_instr* instructions;
   ac_dec_prog_source* prog_source;
   unsigned nFields;
