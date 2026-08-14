@@ -4988,17 +4988,30 @@ void ReadConfFile(){
 
   conf_file = fopen(conf_filename, "r");
 */
-/*
- user_homedir = getenv("HOME");
- conf_filename_local = malloc(strlen(user_homedir) + 19); 
- strcpy(conf_filename_local, user_homedir);
- strcat(conf_filename_local, "/.archc/archc.conf");
-*/
- conf_filename_global = malloc(strlen(SYSCONFDIR) + 12); 
- strcpy(conf_filename_global, SYSCONFDIR);
- strcat(conf_filename_global, "/archc.conf");
+  char *archc_path = getenv("ARCHC_PATH");
+  char *user_homedir = getenv("HOME");
+  char path_buf[512];
 
- conf_file = fopen(conf_filename_global, "r");
+  conf_file = fopen("archc.conf", "r");
+  if (!conf_file && archc_path) {
+    snprintf(path_buf, sizeof(path_buf), "%s/etc/archc.conf", archc_path);
+    conf_file = fopen(path_buf, "r");
+    if (!conf_file) {
+      snprintf(path_buf, sizeof(path_buf), "%s/archc.conf", archc_path);
+      conf_file = fopen(path_buf, "r");
+    }
+  }
+  if (!conf_file && user_homedir) {
+    snprintf(path_buf, sizeof(path_buf), "%s/.archc/archc.conf", user_homedir);
+    conf_file = fopen(path_buf, "r");
+  }
+  if (!conf_file) {
+    conf_filename_global = malloc(strlen(SYSCONFDIR) + 12); 
+    strcpy(conf_filename_global, SYSCONFDIR);
+    strcat(conf_filename_global, "/archc.conf");
+    conf_file = fopen(conf_filename_global, "r");
+    free(conf_filename_global);
+  }
 
   if( !conf_file ){
     //ERROR
