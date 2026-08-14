@@ -42,20 +42,11 @@ public:
   ac_decoder_full* decoder;
 
   bench32_syscall syscall;
-  int cur_instr_id;
-
   //!Constructor.
   bench32_isa(bench32_arch& ref) : bench32_arch_ref(ref) , syscall(ref) {
     //!Building Decoder.
     decoder = ac_decoder_full::CreateDecoder(bench32_isa::formats, bench32_isa::instructions, &ref);
   }
-
-  inline const char* get_name() { return instr_table[cur_instr_id].ac_instr_name; }
-  inline const char* get_mnemonic() { return instr_table[cur_instr_id].ac_instr_mnemonic; }
-  inline unsigned get_size() { return instr_table[cur_instr_id].ac_instr_size; };
-  inline unsigned get_cycles() { return instr_table[cur_instr_id].ac_instr_cycles; };
-  inline unsigned get_min_latency() { return instr_table[cur_instr_id].ac_instr_min_latency; };
-  inline unsigned get_max_latency() { return instr_table[cur_instr_id].ac_instr_max_latency; };
 
   inline __attribute__((always_inline)) void _behavior_instruction(uint8_t op);
 
