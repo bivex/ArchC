@@ -1,0 +1,17 @@
+AC_ARCH(stm32) {
+  ac_mem DM:512M;       // Unified 512 MB System Address Space (contains Flash 0x08000000 & SRAM)
+  ac_mem FLASH:128K;    // 128 KB On-Chip Flash Memory
+  ac_mem SRAM:20K;      // 20 KB On-Chip SRAM
+  ac_mem PERIPH:512M;   // Peripherals & NVIC
+
+  ac_regbank R:16;      // R0-R12, R13=SP, R14=LR, R15=PC
+  ac_reg xpsr, primask, control;
+
+  ac_wordsize 32;
+  ac_fetchsize 16;
+
+  ARCH_CTOR(stm32) {
+    ac_isa("stm32.isa");
+    set_endian("little");
+  };
+};

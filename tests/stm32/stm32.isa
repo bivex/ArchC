@@ -1,0 +1,94 @@
+AC_ISA(stm32) {
+
+  ac_format Type_Imm8  = "%op:4 %subop1:1 %rd1:3 %imm1:8";
+  ac_format Type_Alu3  = "%op:4 %subop2:3 %rm2:3 %rn2:3 %rd2:3";
+  ac_format Type_Alu2  = "%op:4 %subop3:6 %rm3:3 %rdn3:3";
+  ac_format Type_Mem   = "%op:4 %subop4:1 %imm4:5 %rn4:3 %rt4:3";
+  ac_format Type_BCond = "%op:4 %cond5:4 %bdisp5:8:s";
+  ac_format Type_BUnc  = "%op:4 %subop6:1 %bdisp6:11:s";
+  ac_format Type_Halt  = "%op:4 %pad7:12";
+
+  ac_instr<Type_Imm8>  movs_imm, adds_imm, subs_imm, cmp_imm;
+  ac_instr<Type_Alu3>  adds_reg, subs_reg;
+  ac_instr<Type_Alu2>  ands_reg, eors_reg, orrs_reg, muls_reg;
+  ac_instr<Type_Mem>   ldr_imm, str_imm;
+  ac_instr<Type_BCond> beq, bne, bcs, bcc, bmi, bpl, bge, blt;
+  ac_instr<Type_BUnc>  b_unc;
+  ac_instr<Type_Halt>  bkpt_halt;
+
+  ac_asm_map reg {
+    "r"[0..15] = [0..15];
+    "R"[0..15] = [0..15];
+    "sp" = 13; "SP" = 13;
+    "lr" = 14; "LR" = 14;
+    "pc" = 15; "PC" = 15;
+  }
+
+  ISA_CTOR(stm32) {
+    movs_imm.set_asm("movs r%rd1, #%imm1");
+    movs_imm.set_decoder(op = 0x2, subop1 = 0x0);
+
+    cmp_imm.set_asm("cmp r%rd1, #%imm1");
+    cmp_imm.set_decoder(op = 0x2, subop1 = 0x1);
+
+    adds_imm.set_asm("adds r%rd1, #%imm1");
+    adds_imm.set_decoder(op = 0x3, subop1 = 0x0);
+
+    subs_imm.set_asm("subs r%rd1, #%imm1");
+    subs_imm.set_decoder(op = 0x3, subop1 = 0x1);
+
+    adds_reg.set_asm("adds r%rd2, r%rn2, r%rm2");
+    adds_reg.set_decoder(op = 0x1, subop2 = 0x6);
+
+    subs_reg.set_asm("subs r%rd2, r%rn2, r%rm2");
+    subs_reg.set_decoder(op = 0x1, subop2 = 0x7);
+
+    ands_reg.set_asm("ands r%rdn3, r%rm3");
+    ands_reg.set_decoder(op = 0x4, subop3 = 0x00);
+
+    eors_reg.set_asm("eors r%rdn3, r%rm3");
+    eors_reg.set_decoder(op = 0x4, subop3 = 0x01);
+
+    orrs_reg.set_asm("orrs r%rdn3, r%rm3");
+    orrs_reg.set_decoder(op = 0x4, subop3 = 0x0C);
+
+    muls_reg.set_asm("muls r%rdn3, r%rm3");
+    muls_reg.set_decoder(op = 0x4, subop3 = 0x0D);
+
+    str_imm.set_asm("str r%rt4, [r%rn4, #%imm4]");
+    str_imm.set_decoder(op = 0x6, subop4 = 0x0);
+
+    ldr_imm.set_asm("ldr r%rt4, [r%rn4, #%imm4]");
+    ldr_imm.set_decoder(op = 0x6, subop4 = 0x1);
+
+    beq.set_asm("beq %bdisp5");
+    beq.set_decoder(op = 0xD, cond5 = 0x0);
+
+    bne.set_asm("bne %bdisp5");
+    bne.set_decoder(op = 0xD, cond5 = 0x1);
+
+    bcs.set_asm("bcs %bdisp5");
+    bcs.set_decoder(op = 0xD, cond5 = 0x2);
+
+    bcc.set_asm("bcc %bdisp5");
+    bcc.set_decoder(op = 0xD, cond5 = 0x3);
+
+    bmi.set_asm("bmi %bdisp5");
+    bmi.set_decoder(op = 0xD, cond5 = 0x4);
+
+    bpl.set_asm("bpl %bdisp5");
+    bpl.set_decoder(op = 0xD, cond5 = 0x5);
+
+    bge.set_asm("bge %bdisp5");
+    bge.set_decoder(op = 0xD, cond5 = 0xA);
+
+    blt.set_asm("blt %bdisp5");
+    blt.set_decoder(op = 0xD, cond5 = 0xB);
+
+    b_unc.set_asm("b %bdisp6");
+    b_unc.set_decoder(op = 0xE, subop6 = 0x0);
+
+    bkpt_halt.set_asm("bkpt #0");
+    bkpt_halt.set_decoder(op = 0xB);
+  };
+};

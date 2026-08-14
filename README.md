@@ -47,6 +47,7 @@ ArchC includes complete, tested, and optimized processor models with native test
 | **ESP32 (Xtensa)** | 32-bit (Tensilica LX6 / WROOM), LE | 16 GPRs (`A0`..`A15`), Zero-overhead loop (`loop`), IoT MCU | [`tests/esp32/`](tests/esp32/) | **500+ MIPS** |
 | **ESP32-S3** | 32-bit (Tensilica LX7 + AI Vector), LE | Xtensa LX7 + PIE AI vector instructions (`ee.vdot.s8`, `Q0`..`Q7`), 8MB Octal PSRAM | [`tests/esp32s3/`](tests/esp32s3/) | **500+ MIPS** |
 | **ESP32-C3** | 32-bit (RISC-V RV32IMC), LE | 32 GPRs (`x0`..`x31`), Hardware M-ext Multiply/Divide, CSRs | [`tests/esp32c3/`](tests/esp32c3/) | **500+ MIPS** |
+| **STM32F103 (Blue Pill)** | 32-bit (ARM Cortex-M3 / ARMv7-M), LE | 16 GPRs (`R0`..`R15`, `SP`, `LR`), `xPSR` flags, Thumb/Thumb-2, 128KB Flash / 20KB SRAM | [`tests/stm32/`](tests/stm32/) | **~350k inst/loop** |
 | **Motorola 68000** | 32-bit (m68k CISC), BE | 8 Data (`D0`–`D7`), 8 Address (`A0`–`A7`), `CCR` flags, Sega/Amiga ISA | [`tests/m68k/`](tests/m68k/) | **Fast CISC** |
 | **MOS 6502** | 8-bit CISC (NES / Apple II), BE | `A`, `X`, `Y`, `S`, `P`, Zero-Page addressing, classic 8-bit ISA | [`tests/m6502/`](tests/m6502/) | **~250k inst/loop** |
 | **Atmel AVR** | 8-bit Harvard RISC (Arduino), LE | 32 registers (`R0`..`R31`), 16-bit pointers `X`/`Y`/`Z`, `SREG` | [`tests/avr/`](tests/avr/) | **~300k inst/loop** |

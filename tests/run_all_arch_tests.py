@@ -20,6 +20,7 @@ def main():
         ("esp32",   "esp32_test_gen.py"),
         ("esp32s3", "esp32s3_test_gen.py"),
         ("esp32c3", "esp32c3_test_gen.py"),
+        ("stm32",   "stm32_test_gen.py"),
         ("m68k",    "m68k_test_gen.py"),
         ("m6502",   "m6502_test_gen.py"),
         ("avr",     "avr_test_gen.py"),
@@ -49,7 +50,7 @@ def main():
 
     print("\n" + "=" * 72)
     if all_passed:
-        print(" [✓] ALL 17 ARCHITECTURES (ARM, RISC-V, MIPS, SPARC, PPC, x86, x86-64, AArch64, ALPHA, C6X, ESP32, ESP32-S3, ESP32-C3, m68k, MOS 6502, AVR, 8051) PASSED 100%!")
+        print(" [✓] ALL 18 ARCHITECTURES (ARM, RISC-V, MIPS, SPARC, PPC, x86, x86-64, AArch64, ALPHA, C6X, ESP32, ESP32-S3, ESP32-C3, STM32, m68k, MOS 6502, AVR, 8051) PASSED 100%!")
     else:
         print(" [X] SOME TESTS FAILED")
     print("=" * 72)
