@@ -49,4 +49,6 @@ src/actsim/actsim
 /install_local/
 *.x
 *.hex
+*.elf
+__pycache__/
 sample_report.txt
