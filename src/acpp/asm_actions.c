@@ -1450,6 +1450,7 @@ int acpp_asm_parse_asm_argument(ac_dec_format *pf, char *field_str, int is_conca
   if (matching_op == NULL) {
     sprintf(error_msg, "Invalid number of arguments");
     in_error = 1;
+    free(newfield);
     return 0;
   }
 
@@ -1458,6 +1459,7 @@ int acpp_asm_parse_asm_argument(ac_dec_format *pf, char *field_str, int is_conca
     if (matching_op == NULL) {
       sprintf(error_msg, "Invalid number of arguments");
       in_error = 1;
+      free(newfield);
       return 0;
     }
 
@@ -1809,13 +1811,19 @@ string in the pseudo_list variable at the tail of the list.
 */
 int acpp_asm_add_pseudo_member(char *pseudo, char *error_msg)
 {
-  strlist *sl = (strlist *)malloc(sizeof(strlist));
-  sl->next = NULL;
-
   if (!acpp_asm_parse_asm_string(pseudo, 1, error_msg))
     return 0;
 
+  strlist *sl = (strlist *)malloc(sizeof(strlist));
+  if (!sl)
+    return 0;
+  sl->next = NULL;
+
   sl->str = (char *) malloc(strlen(formatted_pseudo)+1);
+  if (!sl->str) {
+    free(sl);
+    return 0;
+  }
   strcpy(sl->str, formatted_pseudo);
 
   /* Insert the pseudo string in the list - at the tail */

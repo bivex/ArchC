@@ -889,7 +889,7 @@ void CheckOptions( int model ) {
 	p = strstr( read.c_str(), "(");
 	if(p ){
 		
-		if( strstr( p, "-v") ||strstr( p, "-v)") )
+		if (strstr(p, "-v"))
 			return;
 	}
 

@@ -169,11 +169,11 @@ unsigned long long GetWord(int index)
     }
 
     //Mask to the size of the field
-    value &= (~((~0LL) << quantity));
+    value &= (~((~0ULL) << quantity));
 
     //If signed, sign extend if necessary
-    if (sign && ( value >= (1 << (quantity-1)) ))
-      value |= (~0LL) << quantity;
+    if (sign && ( value >= (1ULL << (quantity-1)) ))
+      value |= ((~0ULL) << quantity);
 
     return value;
 #undef BUFFER
@@ -1167,6 +1167,7 @@ void accs_CreateCompsimImpl()
           AC_MSG("   the leader %#x is greater then program size (=%#x) or its unnecessary.\n", leader, prog_size_bytes);
         }
       }
+      fclose(leaders);
     }
     else {
       AC_MSG("File with more leaders does not exist: %s\n", filename);
@@ -2924,15 +2925,8 @@ void fast_CreateFileResourcesHeader()
       break;
 
     case MEM:
-
-      if( !HaveMemHier ) { //It is a generic mem. Just emit a base container object.
-        fprintf( output, "%sextern ac_mem %s;\n", INDENT[1], pstorage->name);
-      }
-      else{
-        //It is an ac_mem object.
-        fprintf( output, "%sextern ac_mem %s;\n", INDENT[1], pstorage->name);
-      }
-
+      // It is an ac_mem object.
+      fprintf( output, "%sextern ac_mem %s;\n", INDENT[1], pstorage->name);
       break;
 
       
@@ -3044,17 +3038,8 @@ void fast_CreateFileResourcesImpl()
       break;
 
     case MEM:
-
-      if( !HaveMemHier ) { //It is a generic cache. Just emit a base container object.
-        fprintf( output, "%sac_mem %s(\"%s\", %d);\n", INDENT[1], pstorage->name, pstorage->name, pstorage->size);
-      }
-      else{
-        //It is an ac_mem object.
-        fprintf( output, "%sac_mem %s(\"%s\", %d);\n", INDENT[1], pstorage->name, pstorage->name, pstorage->size);
-      }
-      break;
-
     default:
+      // It is an ac_mem object.
       fprintf( output, "%sac_mem %s(\"%s\", %d);\n", INDENT[1], pstorage->name, pstorage->name, pstorage->size);
       break;
     }
@@ -3187,19 +3172,8 @@ void fast_CreateResourcesHeader(FILE *stream)
       break;
 
     case MEM:
-
-      if( !HaveMemHier ) { //It is a generic mem. Just emit a base container object.
-        fprintf( output, "%sac_mem %s;\n", INDENT[6], pstorage->name);
-      }
-      else{
-        //It is an ac_mem object.
-        fprintf( output, "%sac_mem %s;\n", INDENT[6], pstorage->name);
-      }
-
-      break;
-
-      
     default:
+      // It is an ac_mem object.
       fprintf( output, "%sac_mem %s;\n", INDENT[6], pstorage->name);      
       break;
     }
@@ -3291,17 +3265,8 @@ void fast_CreateResourcesImpl(FILE *stream)
       break;
 
     case MEM:
-
-      if( !HaveMemHier ) { //It is a generic cache. Just emit a base container object.
-        fprintf( output, "%s%s(\"%s\", %d),\n", INDENT[6], pstorage->name, pstorage->name, pstorage->size);
-      }
-      else{
-        //It is an ac_mem object.
-        fprintf( output, "%s%s(\"%s\", %d),\n", INDENT[6], pstorage->name, pstorage->name, pstorage->size);
-      }
-      break;
-
     default:
+      // It is an ac_mem object.
       fprintf( output, "%s%s(\"%s\", %d),\n", INDENT[6], pstorage->name, pstorage->name, pstorage->size);
       break;
     }
@@ -3663,16 +3628,12 @@ void accs_CreateISAImpl()
 }
 
 char *strtoupper(char *str){
-  char *string = (char *) malloc (sizeof(char) * 50);
-  int i;
-  
-  strcpy(string, str);
-
-  if(string){
-    for(i = 0; string[i]!='\0';i++)
-      string[i] = toupper(string[i]);
+  if (!str) return NULL;
+  char *string = strdup(str);
+  if (string) {
+    for(int i = 0; string[i] != '\0'; i++)
+      string[i] = toupper((unsigned char)string[i]);
   }
-
   return string;
 }
 
@@ -3750,7 +3711,7 @@ int accs_EmitSyscalls(FILE* output, int j)
                   "      "#NAME "();\n" \
                   "      ac_instr_counter++;\n"); \
 	  if (ACStatsFlag) fprintf(output, "      ac_sim_stats.syscall_executed++;\n"); \
-          if (strcmp( #NAME , "_exit")==0) fprintf( output, "     return;\n"); \
+          if ((#NAME)[0] == '_' && strcmp(#NAME, "_exit") == 0) fprintf( output, "     return;\n"); \
           if (ACDelayFlag) fprintf(output,"      delay::do_assignment();\n"); \
           fprintf(output, "      break;\n\n"); \
           /* Set j to the last location + 1 (find next instruction after reserved addresses) */ \

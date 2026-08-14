@@ -258,7 +258,10 @@ double psc_obj_repository::average_toggle_count()
          accum += current_value.toggle_count;
    }
 
-   avg = (accum / i);
+   if ( i > 0 )
+      avg = (double)accum / (double)i;
+   else
+      avg = 0.0;
 
    return( avg );
 }
