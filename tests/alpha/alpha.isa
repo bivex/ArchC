@@ -1,0 +1,117 @@
+AC_ISA(alpha) {
+
+  ac_format Type_OpReg  = "%op:6 %ra:5 %rb:5 %sbz:4 %func:7 %rc:5";
+  ac_format Type_OpLit  = "%op:6 %ra:5 %lit:8 %flag:1 %func:7 %rc:5";
+  ac_format Type_Memory = "%op:6 %ra:5 %rb:5 %disp:16:s";
+  ac_format Type_Branch = "%op:6 %ra:5 %bdisp:21:s";
+  ac_format Type_Halt   = "%op:6 %pad:26";
+
+  ac_instr<Type_OpReg>  addq, subq, mulq, cmpeq, cmplt, cmple, cmpult, cmpule;
+  ac_instr<Type_OpReg>  and_op, bis_op, xor_op, bic_op, cmoveq, cmovne;
+  ac_instr<Type_OpLit>  addq_i, subq_i;
+  ac_instr<Type_Memory> lda, ldah, ldq, stq, ldl, stl;
+  ac_instr<Type_Branch> br, bne, beq, blt, bge;
+  ac_instr<Type_Halt>   halt;
+
+  ac_asm_map reg {
+    "$"[0..31] = [0..31];
+    "$v0" = 0;
+    "$t"[0..7] = [1..8];
+    "$s"[0..5] = [9..14];
+    "$fp" = 15;
+    "$a"[0..5] = [16..21];
+    "$t"[8..11] = [22..25];
+    "$ra" = 26;
+    "$pv" = 27;
+    "$at" = 28;
+    "$gp" = 29;
+    "$sp" = 30;
+    "$zero" = 31;
+  }
+
+  ISA_CTOR(alpha) {
+    addq.set_asm("addq $ra, $rb, $rc");
+    addq.set_decoder(op = 0x10, sbz = 0, func = 0x20);
+
+    subq.set_asm("subq $ra, $rb, $rc");
+    subq.set_decoder(op = 0x10, sbz = 0, func = 0x29);
+
+    mulq.set_asm("mulq $ra, $rb, $rc");
+    mulq.set_decoder(op = 0x13, sbz = 0, func = 0x20);
+
+    cmpeq.set_asm("cmpeq $ra, $rb, $rc");
+    cmpeq.set_decoder(op = 0x10, sbz = 0, func = 0x2D);
+
+    cmplt.set_asm("cmplt $ra, $rb, $rc");
+    cmplt.set_decoder(op = 0x10, sbz = 0, func = 0x4D);
+
+    cmple.set_asm("cmple $ra, $rb, $rc");
+    cmple.set_decoder(op = 0x10, sbz = 0, func = 0x6D);
+
+    cmpult.set_asm("cmpult $ra, $rb, $rc");
+    cmpult.set_decoder(op = 0x10, sbz = 0, func = 0x1D);
+
+    cmpule.set_asm("cmpule $ra, $rb, $rc");
+    cmpule.set_decoder(op = 0x10, sbz = 0, func = 0x3D);
+
+    and_op.set_asm("and $ra, $rb, $rc");
+    and_op.set_decoder(op = 0x11, sbz = 0, func = 0x00);
+
+    bis_op.set_asm("bis $ra, $rb, $rc");
+    bis_op.set_decoder(op = 0x11, sbz = 0, func = 0x20);
+
+    xor_op.set_asm("xor $ra, $rb, $rc");
+    xor_op.set_decoder(op = 0x11, sbz = 0, func = 0x40);
+
+    bic_op.set_asm("bic $ra, $rb, $rc");
+    bic_op.set_decoder(op = 0x11, sbz = 0, func = 0x08);
+
+    cmoveq.set_asm("cmoveq $ra, $rb, $rc");
+    cmoveq.set_decoder(op = 0x11, sbz = 0, func = 0x24);
+
+    cmovne.set_asm("cmovne $ra, $rb, $rc");
+    cmovne.set_decoder(op = 0x11, sbz = 0, func = 0x26);
+
+    addq_i.set_asm("addq $ra, $lit, $rc");
+    addq_i.set_decoder(op = 0x10, flag = 1, func = 0x20);
+
+    subq_i.set_asm("subq $ra, $lit, $rc");
+    subq_i.set_decoder(op = 0x10, flag = 1, func = 0x29);
+
+    lda.set_asm("lda $ra, $disp($rb)");
+    lda.set_decoder(op = 0x08);
+
+    ldah.set_asm("ldah $ra, $disp($rb)");
+    ldah.set_decoder(op = 0x09);
+
+    ldq.set_asm("ldq $ra, $disp($rb)");
+    ldq.set_decoder(op = 0x29);
+
+    stq.set_asm("stq $ra, $disp($rb)");
+    stq.set_decoder(op = 0x2D);
+
+    ldl.set_asm("ldl $ra, $disp($rb)");
+    ldl.set_decoder(op = 0x28);
+
+    stl.set_asm("stl $ra, $disp($rb)");
+    stl.set_decoder(op = 0x2C);
+
+    br.set_asm("br $ra, $bdisp");
+    br.set_decoder(op = 0x30);
+
+    bne.set_asm("bne $ra, $bdisp");
+    bne.set_decoder(op = 0x3D);
+
+    beq.set_asm("beq $ra, $bdisp");
+    beq.set_decoder(op = 0x39);
+
+    blt.set_asm("blt $ra, $bdisp");
+    blt.set_decoder(op = 0x3E);
+
+    bge.set_asm("bge $ra, $bdisp");
+    bge.set_decoder(op = 0x3F);
+
+    halt.set_asm("halt");
+    halt.set_decoder(op = 0x00);
+  };
+};

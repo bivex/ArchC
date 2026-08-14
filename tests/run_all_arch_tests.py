@@ -14,6 +14,8 @@ def main():
         ("powerpc", "powerpc_test_gen.py"),
         ("i386",    "i386_test_gen.py"),
         ("x86_64",  "x86_64_test_gen.py"),
+        ("alpha",   "alpha_test_gen.py"),
+        ("c6x",     "c6x_test_gen.py"),
         ("m8051",   "m8051_test_gen.py"),
     ]
 
@@ -40,7 +42,7 @@ def main():
 
     print("\n" + "=" * 72)
     if all_passed:
-        print(" [✓] ALL 8 ARCHITECTURES (ARM, RISC-V, MIPS, SPARC, PPC, x86, 8051, BENCH32) PASSED 100%!")
+        print(" [✓] ALL 10 ARCHITECTURES (ARM, RISC-V, MIPS, SPARC, PPC, x86, x86-64, ALPHA, C6X, 8051) PASSED 100%!")
     else:
         print(" [X] SOME TESTS FAILED")
     print("=" * 72)

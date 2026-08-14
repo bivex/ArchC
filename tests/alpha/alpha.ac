@@ -1,0 +1,11 @@
+AC_ARCH(alpha) {
+  ac_mem DM:512M;
+  ac_regbank RB:32;
+  ac_wordsize 64;
+  ac_fetchsize 32;
+
+  ARCH_CTOR(alpha) {
+    ac_isa("alpha.isa");
+    set_endian("little");
+  };
+};

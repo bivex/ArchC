@@ -1,0 +1,72 @@
+AC_ISA(c6x) {
+
+  ac_format Type_VLIW_Reg = "%creg:3 %z:1 %op:7 %src2:5 %src1:5 %dst:5 %pad:4 %s:1 %p:1";
+  ac_format Type_VLIW_Imm = "%creg:3 %z:1 %op:7 %cst:16:s %dst:5";
+  ac_format Type_Branch   = "%creg:3 %z:1 %op:7 %disp:21:s";
+  ac_format Type_Halt     = "%op:8 %pad:24";
+
+  ac_instr<Type_VLIW_Reg> add_reg, sub_reg, and_reg, or_reg, xor_reg;
+  ac_instr<Type_VLIW_Reg> sadd_reg, ssub_reg, mpy_reg, smpy_reg;
+  ac_instr<Type_VLIW_Reg> ldw, stw;
+  ac_instr<Type_VLIW_Imm> mvkl, mvkh, add_imm, sub_imm;
+  ac_instr<Type_Branch>   b_disp;
+  ac_instr<Type_Halt>     halt;
+
+  ac_asm_map reg {
+    "A"[0..15] = [0..15];
+    "B"[0..15] = [0..15];
+  }
+
+  ISA_CTOR(c6x) {
+    add_reg.set_asm("add %src1, %src2, %dst");
+    add_reg.set_decoder(op = 0x01);
+
+    sub_reg.set_asm("sub %src1, %src2, %dst");
+    sub_reg.set_decoder(op = 0x02);
+
+    and_reg.set_asm("and %src1, %src2, %dst");
+    and_reg.set_decoder(op = 0x03);
+
+    or_reg.set_asm("or %src1, %src2, %dst");
+    or_reg.set_decoder(op = 0x04);
+
+    xor_reg.set_asm("xor %src1, %src2, %dst");
+    xor_reg.set_decoder(op = 0x05);
+
+    sadd_reg.set_asm("sadd %src1, %src2, %dst");
+    sadd_reg.set_decoder(op = 0x06);
+
+    ssub_reg.set_asm("ssub %src1, %src2, %dst");
+    ssub_reg.set_decoder(op = 0x07);
+
+    mpy_reg.set_asm("mpy %src1, %src2, %dst");
+    mpy_reg.set_decoder(op = 0x08);
+
+    smpy_reg.set_asm("smpy %src1, %src2, %dst");
+    smpy_reg.set_decoder(op = 0x09);
+
+    ldw.set_asm("ldw *%src1, %dst");
+    ldw.set_decoder(op = 0x0A);
+
+    stw.set_asm("stw %src2, *%src1");
+    stw.set_decoder(op = 0x0B);
+
+    mvkl.set_asm("mvkl %cst, %dst");
+    mvkl.set_decoder(op = 0x10);
+
+    mvkh.set_asm("mvkh %cst, %dst");
+    mvkh.set_decoder(op = 0x11);
+
+    add_imm.set_asm("add %cst, %dst, %dst");
+    add_imm.set_decoder(op = 0x12);
+
+    sub_imm.set_asm("sub %cst, %dst, %dst");
+    sub_imm.set_decoder(op = 0x13);
+
+    b_disp.set_asm("b %disp");
+    b_disp.set_decoder(op = 0x20);
+
+    halt.set_asm("halt");
+    halt.set_decoder(op = 0x7F);
+  };
+};

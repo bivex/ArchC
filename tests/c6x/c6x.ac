@@ -1,0 +1,13 @@
+AC_ARCH(c6x) {
+  ac_mem DM:512M;
+  ac_regbank RBA:16;
+  ac_regbank RBB:16;
+  ac_reg csr;
+  ac_wordsize 32;
+  ac_fetchsize 32;
+
+  ARCH_CTOR(c6x) {
+    ac_isa("c6x.isa");
+    set_endian("little");
+  };
+};
