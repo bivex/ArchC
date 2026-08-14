@@ -1,0 +1,12 @@
+AC_ARCH(m8051) {
+  ac_mem DM:64K;
+  ac_regbank RB:8;
+  ac_reg acc, b_reg, dptr, sp_reg, psw;
+  ac_wordsize 8;
+  ac_fetchsize 8;
+
+  ARCH_CTOR(m8051) {
+    ac_isa("m8051.isa");
+    set_endian("big");
+  };
+};

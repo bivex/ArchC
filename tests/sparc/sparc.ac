@@ -1,0 +1,12 @@
+AC_ARCH(sparc) {
+  ac_mem DM:512M;
+  ac_regbank RB:32;
+  ac_reg psr, y;
+  ac_wordsize 32;
+  ac_fetchsize 32;
+
+  ARCH_CTOR(sparc) {
+    ac_isa("sparc.isa");
+    set_endian("big");
+  };
+};

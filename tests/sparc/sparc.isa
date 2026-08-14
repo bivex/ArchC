@@ -1,0 +1,93 @@
+AC_ISA(sparc) {
+
+  ac_format Type_F2 = "%op:2 %rd:5 %op2:3 %imm22:22";
+  ac_format Type_F3R = "%op:2 %rd:5 %op3:6 %rs1:5 %i:1 %asi:8 %rs2:5";
+  ac_format Type_F3I = "%op:2 %rd:5 %op3:6 %rs1:5 %i:1 %simm13:13:s";
+  ac_format Type_BR = "%op:2 %a:1 %cond:4 %op2:3 %disp22:22:s";
+  ac_format Type_HLT = "%op:2 %rd:5 %op3:6 %imm:24";
+
+  ac_instr<Type_F3R> add_r, sub_r, and_r, or_r, xor_r, sll_r, srl_r, sra_r;
+  ac_instr<Type_F3I> add_i, sub_i, and_i, or_i, xor_i, sll_i, srl_i, sra_i, ld_i, st_i;
+  ac_instr<Type_F2>  sethi;
+  ac_instr<Type_BR>  be, bne, ba;
+  ac_instr<Type_HLT> halt;
+
+  ac_asm_map reg {
+    "%"[0..31] = [0..31];
+    "%g"[0..7] = [0..7];
+    "%o"[0..7] = [8..15];
+    "%l"[0..7] = [16..23];
+    "%i"[0..7] = [24..31];
+  }
+
+  ISA_CTOR(sparc) {
+    add_r.set_asm("add %rs1, %rs2, %rd");
+    add_r.set_decoder(op = 0x2, op3 = 0x00, i = 0x0);
+
+    add_i.set_asm("add %rs1, %simm13, %rd");
+    add_i.set_decoder(op = 0x2, op3 = 0x00, i = 0x1);
+
+    sub_r.set_asm("sub %rs1, %rs2, %rd");
+    sub_r.set_decoder(op = 0x2, op3 = 0x04, i = 0x0);
+
+    sub_i.set_asm("sub %rs1, %simm13, %rd");
+    sub_i.set_decoder(op = 0x2, op3 = 0x04, i = 0x1);
+
+    and_r.set_asm("and %rs1, %rs2, %rd");
+    and_r.set_decoder(op = 0x2, op3 = 0x01, i = 0x0);
+
+    and_i.set_asm("and %rs1, %simm13, %rd");
+    and_i.set_decoder(op = 0x2, op3 = 0x01, i = 0x1);
+
+    or_r.set_asm("or %rs1, %rs2, %rd");
+    or_r.set_decoder(op = 0x2, op3 = 0x02, i = 0x0);
+
+    or_i.set_asm("or %rs1, %simm13, %rd");
+    or_i.set_decoder(op = 0x2, op3 = 0x02, i = 0x1);
+
+    xor_r.set_asm("xor %rs1, %rs2, %rd");
+    xor_r.set_decoder(op = 0x2, op3 = 0x03, i = 0x0);
+
+    xor_i.set_asm("xor %rs1, %simm13, %rd");
+    xor_i.set_decoder(op = 0x2, op3 = 0x03, i = 0x1);
+
+    sll_r.set_asm("sll %rs1, %rs2, %rd");
+    sll_r.set_decoder(op = 0x2, op3 = 0x25, i = 0x0);
+
+    sll_i.set_asm("sll %rs1, %simm13, %rd");
+    sll_i.set_decoder(op = 0x2, op3 = 0x25, i = 0x1);
+
+    srl_r.set_asm("srl %rs1, %rs2, %rd");
+    srl_r.set_decoder(op = 0x2, op3 = 0x26, i = 0x0);
+
+    srl_i.set_asm("srl %rs1, %simm13, %rd");
+    srl_i.set_decoder(op = 0x2, op3 = 0x26, i = 0x1);
+
+    sra_r.set_asm("sra %rs1, %rs2, %rd");
+    sra_r.set_decoder(op = 0x2, op3 = 0x27, i = 0x0);
+
+    sra_i.set_asm("sra %rs1, %simm13, %rd");
+    sra_i.set_decoder(op = 0x2, op3 = 0x27, i = 0x1);
+
+    ld_i.set_asm("ld [%rs1 + %simm13], %rd");
+    ld_i.set_decoder(op = 0x3, op3 = 0x00, i = 0x1);
+
+    st_i.set_asm("st %rd, [%rs1 + %simm13]");
+    st_i.set_decoder(op = 0x3, op3 = 0x04, i = 0x1);
+
+    sethi.set_asm("sethi %imm22, %rd");
+    sethi.set_decoder(op = 0x0, op2 = 0x4);
+
+    be.set_asm("be %disp22");
+    be.set_decoder(op = 0x0, op2 = 0x2, cond = 0x1);
+
+    bne.set_asm("bne %disp22");
+    bne.set_decoder(op = 0x0, op2 = 0x2, cond = 0x9);
+
+    ba.set_asm("ba %disp22");
+    ba.set_decoder(op = 0x0, op2 = 0x2, cond = 0x8);
+
+    halt.set_asm("halt");
+    halt.set_decoder(op = 0x3, op3 = 0x3F);
+  };
+};

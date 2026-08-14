@@ -89,6 +89,7 @@ int stage_num;
 int pipe_num;
 int reg_width;
 int largest_format_size;
+int smallest_format_size;
 
 ac_sto_list* fetch_device;
 ac_sto_list* first_level_data_device;
@@ -275,9 +276,11 @@ int add_format(ac_dec_format** head, ac_dec_format** tail, char* name, char* str
   //Clear field_list pointer
   field_list = 0;
 
-  //Keeping track of the largest format
-  if( sum_size >largest_format_size )
+  //Keeping track of the largest and smallest formats
+  if( sum_size > largest_format_size )
     largest_format_size = sum_size;
+  if( is_instr && (smallest_format_size == 0 || sum_size < smallest_format_size) )
+    smallest_format_size = sum_size;
 
   //Put new format in the formats list
   if( (*tail) ){

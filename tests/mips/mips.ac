@@ -1,0 +1,12 @@
+AC_ARCH(mips) {
+  ac_mem DM:512M;
+  ac_regbank RB:32;
+  ac_reg hi, lo;
+  ac_wordsize 32;
+  ac_fetchsize 32;
+
+  ARCH_CTOR(mips) {
+    ac_isa("mips.isa");
+    set_endian("big");
+  };
+};

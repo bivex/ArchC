@@ -1763,11 +1763,13 @@ if (HaveTLM2IntrPorts) {
 
   fprintf( output, "%s}\n\n", INDENT[1]);  //end constructor
 
+  extern int smallest_format_size;
   if(ACDecCacheFlag) {
     fprintf( output, "%svoid init_dec_cache() {\n", INDENT[1]);
     fprintf( output, "%sDEC_CACHE = (DecCacheItem*) calloc(sizeof(DecCacheItem), (dec_cache_size",
              INDENT[2]);
-    if( ACIndexFix ) fprintf( output, " / %d", largest_format_size / 8);
+    int step = (smallest_format_size > 0 ? smallest_format_size : largest_format_size) / 8;
+    if( ACIndexFix && step > 1 ) fprintf( output, " / %d", step);
     fprintf( output, "));\n");
     fprintf( output, "%s}\n\n", INDENT[1]);  //end init_dec_cache
   }
@@ -2109,9 +2111,12 @@ void CreateProcessorImpl() {
       fprintf( output, "%s}\n\n", INDENT[1]);
       }*/
 
+    extern int smallest_format_size;
+    int step = (smallest_format_size > 0 ? smallest_format_size : largest_format_size) / 8;
+
     if( ACFullDecode ) {
         fprintf(output, "%sfor (decode_pc = ac_pc; decode_pc < dec_cache_size; decode_pc += %d) {\n",
-                INDENT[1], largest_format_size / 8);
+                INDENT[1], (step > 0 ? step : 1));
         EmitDecodification(output, 2);
         fprintf( output, "%s}\n\n", INDENT[1]);
     }
@@ -2119,8 +2124,8 @@ void CreateProcessorImpl() {
     if ( ACThreading && ACABIFlag && ACDecCacheFlag) {
         fprintf( output, "%s#define AC_SYSC(NAME,LOCATION) \\\n", INDENT[1]);
         fprintf( output, "%sinstr_dec = (DEC_CACHE + (LOCATION", INDENT[1]);
-        if( ACIndexFix )
-            fprintf( output, " / %d", largest_format_size / 8);
+        if( ACIndexFix && step > 1 )
+            fprintf( output, " / %d", step);
         fprintf( output, ")); \\\n");
 
         if ( !ACFullDecode )
@@ -3630,6 +3635,8 @@ void EmitDecodification( FILE *output, int base_indent) {
 
   //}
 
+  extern int smallest_format_size;
+  int step = (smallest_format_size > 0 ? smallest_format_size : largest_format_size) / 8;
   if( ACDecCacheFlag ){
     fprintf( output, "%sinstr_dec = (DEC_CACHE + (", INDENT[base_indent]);
     if (ACFullDecode)
@@ -3637,8 +3644,8 @@ void EmitDecodification( FILE *output, int base_indent) {
     else
       fprintf( output, "ac_pc");
 
-    if( ACIndexFix )
-      fprintf( output, " / %d", largest_format_size / 8);
+    if( ACIndexFix && step > 1 )
+      fprintf( output, " / %d", step);
     fprintf( output, "));\n");
 
     if( !ACFullDecode ) {
@@ -3989,8 +3996,10 @@ void EmitProcessorBhv( FILE *output, int base_indent ) {
   if( ACFullDecode ) {
     fprintf( output, "%sinstr_dec = (DEC_CACHE + (ac_pc",
              INDENT[base_indent]);
-    if( ACIndexFix )
-      fprintf( output, " / %d", largest_format_size / 8);
+    extern int smallest_format_size;
+    int step = (smallest_format_size > 0 ? smallest_format_size : largest_format_size) / 8;
+    if( ACIndexFix && step > 1 )
+      fprintf( output, " / %d", step);
     fprintf( output, "));\n");
     fprintf( output, "%sins_id = instr_dec->id;\n\n", INDENT[base_indent]);
   }
@@ -4413,8 +4422,10 @@ void EmitDispatch(FILE *output, int base_indent) {
   if( ACFullDecode ) {
     fprintf( output, "%sinstr_dec = (DEC_CACHE + (ac_pc",
              INDENT[base_indent]);
-    if( ACIndexFix )
-      fprintf( output, " / %d", largest_format_size / 8);
+    extern int smallest_format_size;
+    int step = (smallest_format_size > 0 ? smallest_format_size : largest_format_size) / 8;
+    if( ACIndexFix && step > 1 )
+      fprintf( output, " / %d", step);
     fprintf( output, "));\n");
     fprintf( output, "%sins_id = instr_dec->id;\n\n", INDENT[base_indent]);
   }

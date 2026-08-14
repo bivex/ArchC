@@ -1,0 +1,75 @@
+AC_ISA(powerpc) {
+
+  ac_format Type_XO = "%op:6 %rt:5 %ra:5 %rb:5 %oe:1 %xo:10";
+  ac_format Type_D  = "%op:6 %rt:5 %ra:5 %d:16:s";
+  ac_format Type_B  = "%op:6 %bo:5 %bi:5 %bd:14:s %aa:1 %lk:1";
+  ac_format Type_I  = "%op:6 %li:24:s %aa:1 %lk:1";
+  ac_format Type_HLT = "%op:6 %imm:26";
+
+  ac_instr<Type_XO> add, subf, and_op, or_op, xor_op, slw, srw, sraw;
+  ac_instr<Type_D>  addi, addic_dot, addis, ori, andi_dot, lwz, stw;
+  ac_instr<Type_B>  bc;
+  ac_instr<Type_I>  b;
+  ac_instr<Type_HLT> halt;
+
+  ac_asm_map reg {
+    "$"[0..31] = [0..31];
+    "r"[0..31] = [0..31];
+  }
+
+  ISA_CTOR(powerpc) {
+    add.set_asm("add %rt, %ra, %rb");
+    add.set_decoder(op = 31, xo = 266, oe = 0);
+
+    subf.set_asm("subf %rt, %ra, %rb");
+    subf.set_decoder(op = 31, xo = 40, oe = 0);
+
+    and_op.set_asm("and %ra, %rt, %rb");
+    and_op.set_decoder(op = 31, xo = 28, oe = 0);
+
+    or_op.set_asm("or %ra, %rt, %rb");
+    or_op.set_decoder(op = 31, xo = 444, oe = 0);
+
+    xor_op.set_asm("xor %ra, %rt, %rb");
+    xor_op.set_decoder(op = 31, xo = 316, oe = 0);
+
+    slw.set_asm("slw %ra, %rt, %rb");
+    slw.set_decoder(op = 31, xo = 24, oe = 0);
+
+    srw.set_asm("srw %ra, %rt, %rb");
+    srw.set_decoder(op = 31, xo = 536, oe = 0);
+
+    sraw.set_asm("sraw %ra, %rt, %rb");
+    sraw.set_decoder(op = 31, xo = 792, oe = 0);
+
+    addi.set_asm("addi %rt, %ra, %d");
+    addi.set_decoder(op = 14);
+
+    addic_dot.set_asm("addic. %rt, %ra, %d");
+    addic_dot.set_decoder(op = 13);
+
+    addis.set_asm("addis %rt, %ra, %d");
+    addis.set_decoder(op = 15);
+
+    ori.set_asm("ori %ra, %rt, %d");
+    ori.set_decoder(op = 24);
+
+    andi_dot.set_asm("andi. %ra, %rt, %d");
+    andi_dot.set_decoder(op = 28);
+
+    lwz.set_asm("lwz %rt, %d(%ra)");
+    lwz.set_decoder(op = 32);
+
+    stw.set_asm("stw %rt, %d(%ra)");
+    stw.set_decoder(op = 36);
+
+    bc.set_asm("bc %bo, %bi, %bd");
+    bc.set_decoder(op = 16);
+
+    b.set_asm("b %li");
+    b.set_decoder(op = 18);
+
+    halt.set_asm("halt");
+    halt.set_decoder(op = 63);
+  };
+};

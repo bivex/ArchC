@@ -1,0 +1,12 @@
+AC_ARCH(i386) {
+  ac_mem DM:512M;
+  ac_regbank RB:8;
+  ac_reg eflags;
+  ac_wordsize 32;
+  ac_fetchsize 32;
+
+  ARCH_CTOR(i386) {
+    ac_isa("i386.isa");
+    set_endian("little");
+  };
+};
