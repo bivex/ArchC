@@ -534,17 +534,23 @@ int ac_load_elf(char* filename, char* data_mem, unsigned int data_mem_size)
 //Functions used to calculate the instr/s of the simulation
 
 #include <sys/times.h>
+#include <chrono>
 
 struct tms ac_run_times;
 clock_t ac_run_start_time;
+static std::chrono::high_resolution_clock::time_point ac_global_chrono_start;
 
 void InitStat()
 {
   ac_run_start_time = times(&ac_run_times);
+  ac_global_chrono_start = std::chrono::high_resolution_clock::now();
 }
 
 void PrintStat()
 {
+  auto chrono_end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed = chrono_end - ac_global_chrono_start;
+  double elapsed_sec = elapsed.count();
   clock_t ac_run_real;
 
   //Print statistics
@@ -559,9 +565,9 @@ void PrintStat()
 
   fprintf(stderr, "    Number of instructions executed: %llu\n", ac_instr_counter);
 
-  if (ac_run_times.tms_utime > 5) {
-    double ac_mips = (ac_instr_counter * 100) / ac_run_times.tms_utime;
-    fprintf(stderr, "    Simulation speed: %.2f K instr/s\n", ac_mips/1000);
+  if (elapsed_sec > 0.0000001 && ac_instr_counter > 10) {
+    double ac_mips = (double)ac_instr_counter / elapsed_sec;
+    fprintf(stderr, "    Simulation speed: %.2f K instr/s\n", ac_mips / 1000.0);
   }
   else {
     fprintf(stderr, "    Simulation speed: (too fast to be precise)\n");
@@ -571,7 +577,9 @@ void PrintStat()
 
 void FilePrintStat(FILE* output)
 {
-
+  auto chrono_end = std::chrono::high_resolution_clock::now();
+  std::chrono::duration<double> elapsed = chrono_end - ac_global_chrono_start;
+  double elapsed_sec = elapsed.count();
   clock_t ac_run_real;
 
   //Print statistics
@@ -586,9 +594,9 @@ void FilePrintStat(FILE* output)
 
   fprintf(output, "    Number of instructions executed: %llu\n", ac_instr_counter);
 
-  if (ac_run_times.tms_utime > 5) {
-    double ac_mips = (ac_instr_counter * 100) / ac_run_times.tms_utime;
-    fprintf(output, "    Simulation speed: %.2f K instr/s\n", ac_mips/1000);
+  if (elapsed_sec > 0.0000001 && ac_instr_counter > 10) {
+    double ac_mips = (double)ac_instr_counter / elapsed_sec;
+    fprintf(output, "    Simulation speed: %.2f K instr/s\n", ac_mips / 1000.0);
   }
   else {
     fprintf(output, "    Simulation speed: (too fast to be precise)\n");
