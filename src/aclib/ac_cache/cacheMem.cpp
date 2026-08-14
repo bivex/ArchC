@@ -5,7 +5,7 @@ using namespace std;
 
 cacheMem::~cacheMem()
 {
-	delete blocks;
+	delete[] blocks;
 }
 
 
