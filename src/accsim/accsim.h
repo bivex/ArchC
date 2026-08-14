@@ -96,8 +96,8 @@ void fast_CreateCompsimImpl();
 void fast_CreateStorageHeader();
 void fast_CreateStorageImpl();
 
-void fast_CreateResourcesHeader();
-void fast_CreateResourcesImpl();
+void fast_CreateResourcesHeader(FILE *stream);
+void fast_CreateResourcesImpl(FILE *stream);
 
 void fast_CreateDelayHeader();
 void fast_CreateDelayImpl();

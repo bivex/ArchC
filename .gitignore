@@ -37,11 +37,12 @@ src/accsim/eval.h
 src/acbinutils/binutils/gas/config/tc-xxxxx.c
 
 # generated executables and scripts
-acbingen.sh
-acrelconvert
-bmdsfg
-accsim
-acsim
-actsim
-config.cache
-env.sh
+/acbingen.sh
+src/acbinutils/acbingen.sh
+src/acbinutils/acrelconvert
+src/acbinutils/bmdsfg
+src/accsim/accsim
+src/acsim/acsim
+src/actsim/actsim
+/config.cache
+/env.sh

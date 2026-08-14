@@ -215,9 +215,7 @@ void print_comment( FILE* output, char* description ){
 //////////////////////////////////////////
 /*!Main routine of  ArchC pre-processor.*/
 //////////////////////////////////////////
-int main( argc, argv )
-     int argc;
-     char **argv;
+int main( int argc, char **argv )
 {
   extern char *project_name, *isa_filename;
   extern int wordsize;

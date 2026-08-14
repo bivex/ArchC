@@ -37,6 +37,8 @@
 #include "core_actions.h"
 #include "asm_actions.h"
 
+int yylex(void);
+
 #define YYDEBUG 1
 #define YYERROR_VERBOSE
 #define ADD_DEBUG 1

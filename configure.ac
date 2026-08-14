@@ -6,7 +6,6 @@ AC_INIT([archc], [2.4.1])
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_HEADER(config.h)
 #AC_CONFIG_MACRO_DIR([m4])
-AM_INIT_AUTOMAKE
 AM_INIT_AUTOMAKE([subdir-objects])
 
 AM_SILENT_RULES([yes])
@@ -143,7 +142,7 @@ AM_CONDITIONAL([HLT_SUPPORT], [ test "x$disable_hlt" != "xyes" -a "x$have_libelf
 
 # Sets global flags
 CFLAGS="$CFLAGS -Wall"
-CXXFLAGS="$CXXFLAGS -Wall"
+CXXFLAGS="$CXXFLAGS -Wall -std=c++17"
 
 # Checks for libraries.
 
