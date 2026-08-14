@@ -1,0 +1,16 @@
+AC_ARCH(nrf52) {
+  ac_mem DM:512M;       // Unified 512 MB System Address Space
+  ac_mem FLASH:1M;      // 1 MB On-Chip Flash Memory (0x00000000)
+  ac_mem SRAM:256K;     // 256 KB On-Chip SRAM (0x20000000)
+  ac_mem RADIO_PERIPH:512M; // 2.4GHz BLE Radio, AES-CCM, EasyDMA, Peripherals
+
+  ac_regbank R:16;      // R0-R12, R13=SP, R14=LR, R15=PC
+  ac_reg xpsr, primask, control, event_reg;
+  ac_wordsize 32;
+  ac_fetchsize 16;
+
+  ARCH_CTOR(nrf52) {
+    ac_isa("nrf52.isa");
+    set_endian("little");
+  };
+};

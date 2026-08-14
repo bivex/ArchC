@@ -48,6 +48,7 @@ ArchC includes complete, tested, and optimized processor models with native test
 | **ESP32-S3** | 32-bit (Tensilica LX7 + AI Vector), LE | Xtensa LX7 + PIE AI vector instructions (`ee.vdot.s8`, `Q0`..`Q7`), 8MB Octal PSRAM | [`tests/esp32s3/`](tests/esp32s3/) | **500+ MIPS** |
 | **ESP32-C3** | 32-bit (RISC-V RV32IMC), LE | 32 GPRs (`x0`..`x31`), Hardware M-ext Multiply/Divide, CSRs | [`tests/esp32c3/`](tests/esp32c3/) | **456+ MIPS** |
 | **STM32F103 (Blue Pill)** | 32-bit (ARM Cortex-M3 / ARMv7-M), LE | 16 GPRs (`R0`..`R15`, `SP`, `LR`), `xPSR` flags, Thumb/Thumb-2, 128KB Flash / 20KB SRAM | [`tests/stm32/`](tests/stm32/) | **462+ MIPS** |
+| **Nordic nRF52 (BLE/ULP)** | 32-bit (ARM Cortex-M4F / ARMv7E-M), LE | 16 GPRs (`R0`..`R15`), Ultra-Low Power `WFE`/`SEV`/`WFI`, 1MB Flash / 256KB SRAM | [`tests/nrf52/`](tests/nrf52/) | **470+ MIPS** |
 | **Motorola 68000** | 32-bit (m68k CISC), BE | 8 Data (`D0`–`D7`), 8 Address (`A0`–`A7`), `CCR` flags, Sega/Amiga ISA | [`tests/m68k/`](tests/m68k/) | **359+ MIPS** |
 | **MOS 6502** | 8-bit CISC (NES / Apple II), BE | `A`, `X`, `Y`, `S`, `P`, Zero-Page addressing, classic 8-bit ISA | [`tests/m6502/`](tests/m6502/) | **417+ MIPS** |
 | **Atmel AVR** | 8-bit Harvard RISC (Arduino), LE | 32 registers (`R0`..`R31`), 16-bit pointers `X`/`Y`/`Z`, `SREG` | [`tests/avr/`](tests/avr/) | **474+ MIPS** |
@@ -61,7 +62,7 @@ python3 tests/run_all_arch_tests.py
 
 ---
 
-## 🏭 STM32 (STMicroelectronics) — Мировой стандарт №1 для промышленности и устройств
+## 🏭 1. STM32 (STMicroelectronics) — Мировой стандарт №1 для промышленности и устройств
 
 - **Архитектура:** ARM Cortex-M0+ / M3 / M4 / M7 / M33 (ARMv7-M Thumb/Thumb-2, Little-Endian).
 - **Популярные линейки:**
@@ -72,6 +73,22 @@ python3 tests/run_all_arch_tests.py
 - **Почему в проде:** Железная устойчивость к помехам (EMC/ESD), гарантия выпуска одного и того же чипа на 10–15 лет вперед (Longevity Commitment), профессиональная среда отладки.
 
 > Смотри модель и верификационный набор: [`tests/stm32/`](tests/stm32/)
+
+---
+
+## 🔋 2. Nordic Semiconductor (nRF52 / nRF53 / nRF91) — Короли автономности и Bluetooth (BLE)
+
+- **Архитектура:** ARM Cortex-M4F / Cortex-M33 (ARMv7E-M Thumb-2 + ULP Event Control, Little-Endian).
+- **Популярные чипы:**
+  - **nRF52840 / nRF52832:** Флагманы Bluetooth Low Energy (BLE 5.0), Thread, Zigbee, ANT, 2.4 GHz RF.
+  - **nRF5340:** Двухъядерный чип (Application Core Cortex-M33 + Network Core Cortex-M33) для аудиоустройств нового поколения (LE Audio).
+  - **nRF9160:** Сверхмалопотребляющий SiP со встроенным модемом LTE-M / NB-IoT и GPS.
+- **Главный козырь: Сверхнизкое энергопотребление (Ultra-Low Power)**:
+  - ESP32 в режиме сна и пробуждения тратит много энергии — на батарейке проработает пару месяцев.
+  - Чипы Nordic на одной маленькой батарейке-таблетке **CR2032 работают 3–5 ЛЕТ!**
+- **Где стоят:** Беспроводные мыши/клавиатуры (Logitech), фитнес-браслеты, медицинские глюкометры и пульсоксиметры, метки-трекеры (аналоги Apple AirTag), умные дверные замки.
+
+> Смотри модель и верификационный набор: [`tests/nrf52/`](tests/nrf52/)
 
 ---
 
