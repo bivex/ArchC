@@ -78,48 +78,51 @@ public:
 #define BUFFER(index) ((index<*quant) ? (buffer[index]) : (*quant=ExpandInstrBuffer(index),buffer[index]))
 
     int first = last - (quantity-1);
+    const int word_bits = sizeof(ac_word) * 8;
 
-    int index_first = first/(sizeof(ac_word) * 8);
-    int index_last = last/(sizeof(ac_word) * 8);
+    int index_first = first / word_bits;
+    int index_last = last / word_bits;
 
     unsigned long long value = 0;
-    int i;
-    if (!this->ac_mt_endian) {
-      //big-endian: first  last
-      //          0xAA BB CC DD
 
-      //Read words from first to last
-      for (i=index_first; i<=index_last; i++) {
-        value <<= (sizeof(ac_word) * 8);
-        value |= BUFFER(i);
+    // Single-word fast path (most common case in RISC ISAs)
+    if (index_first == index_last) {
+      ac_word w = BUFFER(index_first);
+      if (!this->ac_mt_endian) {
+        int shift = word_bits - (last % word_bits + 1);
+        value = (shift >= 0 && shift < word_bits) ? (w >> shift) : 0;
+      } else {
+        int shift = first % word_bits;
+        value = (shift >= 0 && shift < word_bits) ? (w >> shift) : 0;
       }
-
-      //Remove bits before last
-      value >>= (sizeof(ac_word) * 8) - (last%(sizeof(ac_word) * 8) + 1);
-
+    } else {
+      if (!this->ac_mt_endian) {
+        for (int i=index_first; i<=index_last; i++) {
+          value <<= word_bits;
+          value |= BUFFER(i);
+        }
+        value >>= word_bits - (last % word_bits + 1);
+      } else {
+        for (int i=index_last; i>=index_first; i--) {
+          value <<= word_bits;
+          value |= BUFFER(i);
+        }
+        value >>= (first % word_bits);
+      }
     }
 
-    else {
-      //little-endian: last  first
-      //             0xAA BB CC DD
-
-      //Read words from last to first
-      for (i=index_last; i>=index_first; i--) {
-        value <<= (sizeof(ac_word) * 8);
-        value |= BUFFER(i);
-      }
-
-      //Remove bits before first
-      value >>= first%(sizeof(ac_word) * 8);
-
+    // Mask to the size of the field
+    if (quantity > 0 && quantity < 64) {
+      value &= (1ULL << quantity) - 1ULL;
     }
 
-    //Mask to the size of the field
-    value &= ((unsigned)(~0LL)) >> (64-((unsigned)quantity));
-
-    //If signed, sign extend if necessary
-    if (sign && ( value >= (unsigned)(1 << (quantity-1)) ))
-      value |= (~0LL) << quantity;
+    // Sign extend if requested
+    if (sign && quantity > 0 && quantity < 64) {
+      unsigned long long sign_bit = 1ULL << (quantity - 1);
+      if (value & sign_bit) {
+        value |= (~0ULL) << quantity;
+      }
+    }
 
     return value;
 #undef BUFFER
