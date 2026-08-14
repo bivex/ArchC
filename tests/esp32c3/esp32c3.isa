@@ -1,0 +1,156 @@
+AC_ISA(esp32c3) {
+
+  ac_format Type_R = "%funct7:7 %rs2:5 %rs1:5 %funct3:3 %rd:5 %op:7";
+  ac_format Type_I = "%imm12:12:s %rs1:5 %funct3:3 %rd:5 %op:7";
+  ac_format Type_S = "%imm7:7:s %rs2:5 %rs1:5 %funct3:3 %imm5:5 %op:7";
+  ac_format Type_B = "%imm12:1:s %imm10:6 %rs2:5 %rs1:5 %funct3:3 %imm4:4 %imm11:1 %op:7";
+  ac_format Type_U = "%imm20:20 %rd:5 %op:7";
+  ac_format Type_J = "%imm20:1:s %imm10:10 %imm11:1 %imm8:8 %rd:5 %op:7";
+  ac_format Type_H = "%op:7 %pad:25";
+
+  ac_instr<Type_R> add, sub, and_op, or_op, xor_op, sll_op, srl_op, sra_op, slt, sltu, mul_op, mulh_op, mulhu_op, div_op, divu_op, rem_op, remu_op;
+  ac_instr<Type_I> addi, andi, ori, xori, slli, srli, slti, sltiu, jalr, lw, lh, lb;
+  ac_instr<Type_S> sw, sh, sb;
+  ac_instr<Type_B> beq, bne, blt, bge, bltu, bgeu;
+  ac_instr<Type_U> lui, auipc;
+  ac_instr<Type_J> jal;
+  ac_instr<Type_H> halt;
+
+  ac_asm_map reg {
+    "$"[0..31] = [0..31];
+    "x"[0..31] = [0..31];
+    "zero" = 0; "ra" = 1; "sp" = 2; "gp" = 3; "tp" = 4;
+    "t0" = 5; "t1" = 6; "t2" = 7; "s0" = 8; "s1" = 9;
+    "a0" = 10; "a1" = 11; "a2" = 12; "a3" = 13; "a4" = 14; "a5" = 15; "a6" = 16; "a7" = 17;
+    "s2" = 18; "s3" = 19; "s4" = 20; "s5" = 21; "s6" = 22; "s7" = 23; "s8" = 24; "s9" = 25; "s10" = 26; "s11" = 27;
+    "t3" = 28; "t4" = 29; "t5" = 30; "t6" = 31;
+  }
+
+  ISA_CTOR(esp32c3) {
+    add.set_asm("add %rd, %rs1, %rs2");
+    add.set_decoder(op = 0x33, funct3 = 0x0, funct7 = 0x00);
+
+    sub.set_asm("sub %rd, %rs1, %rs2");
+    sub.set_decoder(op = 0x33, funct3 = 0x0, funct7 = 0x20);
+
+    and_op.set_asm("and %rd, %rs1, %rs2");
+    and_op.set_decoder(op = 0x33, funct3 = 0x7, funct7 = 0x00);
+
+    or_op.set_asm("or %rd, %rs1, %rs2");
+    or_op.set_decoder(op = 0x33, funct3 = 0x6, funct7 = 0x00);
+
+    xor_op.set_asm("xor %rd, %rs1, %rs2");
+    xor_op.set_decoder(op = 0x33, funct3 = 0x4, funct7 = 0x00);
+
+    sll_op.set_asm("sll %rd, %rs1, %rs2");
+    sll_op.set_decoder(op = 0x33, funct3 = 0x1, funct7 = 0x00);
+
+    srl_op.set_asm("srl %rd, %rs1, %rs2");
+    srl_op.set_decoder(op = 0x33, funct3 = 0x5, funct7 = 0x00);
+
+    sra_op.set_asm("sra %rd, %rs1, %rs2");
+    sra_op.set_decoder(op = 0x33, funct3 = 0x5, funct7 = 0x20);
+
+    slt.set_asm("slt %rd, %rs1, %rs2");
+    slt.set_decoder(op = 0x33, funct3 = 0x2, funct7 = 0x00);
+
+    sltu.set_asm("sltu %rd, %rs1, %rs2");
+    sltu.set_decoder(op = 0x33, funct3 = 0x3, funct7 = 0x00);
+
+    mul_op.set_asm("mul %rd, %rs1, %rs2");
+    mul_op.set_decoder(op = 0x33, funct3 = 0x0, funct7 = 0x01);
+
+    mulh_op.set_asm("mulh %rd, %rs1, %rs2");
+    mulh_op.set_decoder(op = 0x33, funct3 = 0x1, funct7 = 0x01);
+
+    mulhu_op.set_asm("mulhu %rd, %rs1, %rs2");
+    mulhu_op.set_decoder(op = 0x33, funct3 = 0x3, funct7 = 0x01);
+
+    div_op.set_asm("div %rd, %rs1, %rs2");
+    div_op.set_decoder(op = 0x33, funct3 = 0x4, funct7 = 0x01);
+
+    divu_op.set_asm("divu %rd, %rs1, %rs2");
+    divu_op.set_decoder(op = 0x33, funct3 = 0x5, funct7 = 0x01);
+
+    rem_op.set_asm("rem %rd, %rs1, %rs2");
+    rem_op.set_decoder(op = 0x33, funct3 = 0x6, funct7 = 0x01);
+
+    remu_op.set_asm("remu %rd, %rs1, %rs2");
+    remu_op.set_decoder(op = 0x33, funct3 = 0x7, funct7 = 0x01);
+
+    addi.set_asm("addi %rd, %rs1, %imm12");
+    addi.set_decoder(op = 0x13, funct3 = 0x0);
+
+    andi.set_asm("andi %rd, %rs1, %imm12");
+    andi.set_decoder(op = 0x13, funct3 = 0x7);
+
+    ori.set_asm("ori %rd, %rs1, %imm12");
+    ori.set_decoder(op = 0x13, funct3 = 0x6);
+
+    xori.set_asm("xori %rd, %rs1, %imm12");
+    xori.set_decoder(op = 0x13, funct3 = 0x4);
+
+    slli.set_asm("slli %rd, %rs1, %imm12");
+    slli.set_decoder(op = 0x13, funct3 = 0x1);
+
+    srli.set_asm("srli %rd, %rs1, %imm12");
+    srli.set_decoder(op = 0x13, funct3 = 0x5);
+
+    slti.set_asm("slti %rd, %rs1, %imm12");
+    slti.set_decoder(op = 0x13, funct3 = 0x2);
+
+    sltiu.set_asm("sltiu %rd, %rs1, %imm12");
+    sltiu.set_decoder(op = 0x13, funct3 = 0x3);
+
+    jalr.set_asm("jalr %rd, %rs1, %imm12");
+    jalr.set_decoder(op = 0x67, funct3 = 0x0);
+
+    lw.set_asm("lw %rd, %imm12(%rs1)");
+    lw.set_decoder(op = 0x03, funct3 = 0x2);
+
+    lh.set_asm("lh %rd, %imm12(%rs1)");
+    lh.set_decoder(op = 0x03, funct3 = 0x1);
+
+    lb.set_asm("lb %rd, %imm12(%rs1)");
+    lb.set_decoder(op = 0x03, funct3 = 0x0);
+
+    sw.set_asm("sw %rs2, %imm7(%rs1, %imm5)");
+    sw.set_decoder(op = 0x23, funct3 = 0x2);
+
+    sh.set_asm("sh %rs2, %imm7(%rs1, %imm5)");
+    sh.set_decoder(op = 0x23, funct3 = 0x1);
+
+    sb.set_asm("sb %rs2, %imm7(%rs1, %imm5)");
+    sb.set_decoder(op = 0x23, funct3 = 0x0);
+
+    beq.set_asm("beq %rs1, %rs2, %imm12");
+    beq.set_decoder(op = 0x63, funct3 = 0x0);
+
+    bne.set_asm("bne %rs1, %rs2, %imm12");
+    bne.set_decoder(op = 0x63, funct3 = 0x1);
+
+    blt.set_asm("blt %rs1, %rs2, %imm12");
+    blt.set_decoder(op = 0x63, funct3 = 0x4);
+
+    bge.set_asm("bge %rs1, %rs2, %imm12");
+    bge.set_decoder(op = 0x63, funct3 = 0x5);
+
+    bltu.set_asm("bltu %rs1, %rs2, %imm12");
+    bltu.set_decoder(op = 0x63, funct3 = 0x6);
+
+    bgeu.set_asm("bgeu %rs1, %rs2, %imm12");
+    bgeu.set_decoder(op = 0x63, funct3 = 0x7);
+
+    lui.set_asm("lui %rd, %imm20");
+    lui.set_decoder(op = 0x37);
+
+    auipc.set_asm("auipc %rd, %imm20");
+    auipc.set_decoder(op = 0x17);
+
+    jal.set_asm("jal %rd, %imm20");
+    jal.set_decoder(op = 0x6F);
+
+    halt.set_asm("halt");
+    halt.set_decoder(op = 0x00);
+  };
+};

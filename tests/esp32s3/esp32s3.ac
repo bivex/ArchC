@@ -1,0 +1,19 @@
+AC_ARCH(esp32s3) {
+  ac_mem IROM:16M;     // 16 MB Octal Flash (0x42000000)
+  ac_mem IRAM:128K;    // 128 KB Instruction SRAM (0x40378000)
+  ac_mem DRAM:384K;    // 384 KB Data SRAM (0x3FC88000)
+  ac_mem PSRAM:8M;     // 8 MB Octal PSRAM (0x3C000000)
+  ac_mem DM:512M;      // Unified 512 MB System Address Space
+
+  ac_regbank AR:16;    // 16 32-bit Physical Address Registers (A0..A15)
+  ac_regbank QR:8;     // 8 64-bit SIMD Vector Registers (Q0..Q7 for TinyML/PIE)
+  ac_reg sar, lcount, lbeg, lend, ps, accx;
+
+  ac_wordsize 32;
+  ac_fetchsize 32;
+
+  ARCH_CTOR(esp32s3) {
+    ac_isa("esp32s3.isa");
+    set_endian("little");
+  };
+};

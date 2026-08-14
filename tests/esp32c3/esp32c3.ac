@@ -1,0 +1,17 @@
+AC_ARCH(esp32c3) {
+  ac_mem IROM:4M;      // 4 MB Quad Flash (0x42000000)
+  ac_mem IRAM:128K;    // 128 KB Instruction SRAM (0x4037C000)
+  ac_mem DRAM:272K;    // 272 KB Data SRAM (0x3FC80000)
+  ac_mem DM:512M;      // Unified 512 MB System Address Space
+
+  ac_regbank RB:32;    // 32 32-bit RISC-V Registers (x0..x31)
+  ac_reg mstatus, mie, mtvec, mepc, mcause;
+
+  ac_wordsize 32;
+  ac_fetchsize 32;
+
+  ARCH_CTOR(esp32c3) {
+    ac_isa("esp32c3.isa");
+    set_endian("little");
+  };
+};

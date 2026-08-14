@@ -1,0 +1,104 @@
+AC_ISA(esp32s3) {
+
+  ac_format Type_RRR    = "%op:8 %op1:4 %r:4 %s:4 %t:4 %op2:8";
+  ac_format Type_RRI8   = "%op:8 %imm8:8:s %s:4 %t:4 %pad1:8";
+  ac_format Type_RI16   = "%op:8 %t:4 %imm16:16:s %pad2:4";
+  ac_format Type_L32I   = "%op:8 %disp:8 %s:4 %t:4 %pad3:8";
+  ac_format Type_Branch = "%op:8 %bdisp:12:s %s:4 %t:4 %pad4:4";
+  ac_format Type_Jump   = "%op:8 %target:18:s %pad5:6";
+  ac_format Type_Loop   = "%op:8 %ldisp:8 %s:4 %pad6:12";
+  ac_format Type_PIE    = "%op:8 %qr:3 %qs:3 %qt:3 %mode:7 %pad8:8";
+  ac_format Type_Halt   = "%op:8 %pad7:24";
+
+  ac_instr<Type_RRR>    add_op, sub_op, and_op, or_op, xor_op, mull_op;
+  ac_instr<Type_RRI8>   addi_op, addmi_op;
+  ac_instr<Type_RI16>   movi_op;
+  ac_instr<Type_L32I>   l32i_op, s32i_op;
+  ac_instr<Type_Branch> bne_op, beq_op, blt_op, bge_op;
+  ac_instr<Type_Jump>   j_op, call0_op;
+  ac_instr<Type_Loop>   loop_op;
+  ac_instr<Type_PIE>    ee_vadd_s16, ee_vmul_s16, ee_vdot_s8, ee_vld_q, ee_vst_q;
+  ac_instr<Type_Halt>   halt_op;
+
+  ac_asm_map reg {
+    "a"[0..15] = [0..15];
+    "A"[0..15] = [0..15];
+    "q"[0..7] = [0..7];
+    "Q"[0..7] = [0..7];
+    "sp" = 1;
+  }
+
+  ISA_CTOR(esp32s3) {
+    add_op.set_asm("add a%r, a%s, a%t");
+    add_op.set_decoder(op = 0x00, op1 = 0x0, op2 = 0x08);
+
+    sub_op.set_asm("sub a%r, a%s, a%t");
+    sub_op.set_decoder(op = 0x00, op1 = 0x0, op2 = 0x0C);
+
+    and_op.set_asm("and a%r, a%s, a%t");
+    and_op.set_decoder(op = 0x00, op1 = 0x0, op2 = 0x01);
+
+    or_op.set_asm("or a%r, a%s, a%t");
+    or_op.set_decoder(op = 0x00, op1 = 0x0, op2 = 0x02);
+
+    xor_op.set_asm("xor a%r, a%s, a%t");
+    xor_op.set_decoder(op = 0x00, op1 = 0x0, op2 = 0x03);
+
+    mull_op.set_asm("mull a%r, a%s, a%t");
+    mull_op.set_decoder(op = 0x00, op1 = 0x2, op2 = 0x08);
+
+    addi_op.set_asm("addi a%t, a%s, %imm8");
+    addi_op.set_decoder(op = 0x02);
+
+    addmi_op.set_asm("addmi a%t, a%s, %imm8");
+    addmi_op.set_decoder(op = 0x0D);
+
+    movi_op.set_asm("movi a%t, %imm16");
+    movi_op.set_decoder(op = 0x0A);
+
+    l32i_op.set_asm("l32i a%t, a%s, %disp");
+    l32i_op.set_decoder(op = 0x06);
+
+    s32i_op.set_asm("s32i a%t, a%s, %disp");
+    s32i_op.set_decoder(op = 0x07);
+
+    bne_op.set_asm("bne a%s, a%t, %bdisp");
+    bne_op.set_decoder(op = 0x17);
+
+    beq_op.set_asm("beq a%s, a%t, %bdisp");
+    beq_op.set_decoder(op = 0x16);
+
+    blt_op.set_asm("blt a%s, a%t, %bdisp");
+    blt_op.set_decoder(op = 0x14);
+
+    bge_op.set_asm("bge a%s, a%t, %bdisp");
+    bge_op.set_decoder(op = 0x15);
+
+    j_op.set_asm("j %target");
+    j_op.set_decoder(op = 0x05);
+
+    call0_op.set_asm("call0 %target");
+    call0_op.set_decoder(op = 0x09);
+
+    loop_op.set_asm("loop a%s, %ldisp");
+    loop_op.set_decoder(op = 0x12);
+
+    ee_vadd_s16.set_asm("ee.vadd.s16 q%qr, q%qs, q%qt");
+    ee_vadd_s16.set_decoder(op = 0x30, mode = 0x01);
+
+    ee_vmul_s16.set_asm("ee.vmul.s16 q%qr, q%qs, q%qt");
+    ee_vmul_s16.set_decoder(op = 0x30, mode = 0x02);
+
+    ee_vdot_s8.set_asm("ee.vdot.s8 a%qr, q%qs, q%qt");
+    ee_vdot_s8.set_decoder(op = 0x30, mode = 0x03);
+
+    ee_vld_q.set_asm("ee.vld.q q%qr, [a%qs]");
+    ee_vld_q.set_decoder(op = 0x30, mode = 0x04);
+
+    ee_vst_q.set_asm("ee.vst.q q%qr, [a%qs]");
+    ee_vst_q.set_decoder(op = 0x30, mode = 0x05);
+
+    halt_op.set_asm("ill");
+    halt_op.set_decoder(op = 0x7F);
+  };
+};
