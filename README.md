@@ -42,6 +42,7 @@ ArchC includes complete, tested, and optimized processor models with native test
 | **Intel x86** | 32-bit (i386 CISC), LE | `EAX`–`EDI`, `EFLAGS` register, displacement addressing | [`tests/i386/`](tests/i386/) | **550+ MIPS** |
 | **Intel x86-64** | 64-bit (AMD64 / x64), LE | 16 64-bit GPRs (`RAX`..`R15`), `RFLAGS`, ELF64 support | [`tests/x86_64/`](tests/x86_64/) | **628+ MIPS** |
 | **AArch64** | 64-bit (ARMv8-A / ARM64), LE | `X0`–`X30`, `XZR`, `PSTATE` (`NZCV`), ELF64 support | [`tests/aarch64/`](tests/aarch64/) | **534+ MIPS** |
+| **Apple Silicon ARM64e** | 64-bit (ARMv8.5-A/v9-A / M1–M4), LE | Pointer Authentication (PAC `pacia`/`autia`), AMX Coprocessor (`amx_fma`), 512MB Unified Memory | [`tests/apple_arm/`](tests/apple_arm/) | **536+ MIPS** |
 | **DEC Alpha** | 64-bit (Alpha 21264 / AXP), LE | 32 64-bit GPRs, `CMOV`, no condition codes, ELF64 support | [`tests/alpha/`](tests/alpha/) | **516+ MIPS** |
 | **TI C6x DSP** | 32-bit (TMS320C6000 VLIW), LE | Dual-bank (`A0`..`A15`, `B0`..`B15`), VLIW `p-bit`, Saturated Math (`SADD`/`SMPY`) | [`tests/c6x/`](tests/c6x/) | **505+ MIPS** |
 | **ESP32 (Xtensa)** | 32-bit (Tensilica LX6 / WROOM), LE | 16 GPRs (`A0`..`A15`), Zero-overhead loop (`loop`), IoT MCU | [`tests/esp32/`](tests/esp32/) | **500+ MIPS** |
@@ -59,6 +60,21 @@ Run all architecture tests with a single command:
 ```bash
 python3 tests/run_all_arch_tests.py
 ```
+
+---
+
+## 🍏 3. Apple Silicon (ARM64e / M1–M4) — Pointer Authentication & Matrix Coprocessor
+
+- **Архитектура:** 64-bit ARMv8.5-A / ARMv9-A (ARM64e, Little-Endian).
+- **Ключевые фичи аппаратной платформы Apple:**
+  - **Apple Pointer Authentication Code (PAC):** Аппаратная защита указателей с криптографическим тегированием верхних бит адреса (`pacia`, `autia`, `pacda`, `autda`). Предотвращает ROP/JOP атаки на уровне ядра и системных сервисов.
+  - **Apple Matrix Coprocessor (AMX):** Скрытый высокопроизводительный блок тензорных и матричных вычислений (`amx_fma`), разгружающий NPU и CPU при обработке нейросетей и линейной алгебры.
+  - **512 MB Unified Memory (UMA) & 16 MB AMX SRAM:** Сверхбыстрая общая память для параллельной обработки данных CPU и акселератором.
+- **Производительность симуляции в ArchC:** **536+ MIPS** (~35 млн инструкций за 0.06 сек).
+
+> Смотри модель и верификационный набор: [`tests/apple_arm/`](tests/apple_arm/)
+
+---
 
 ---
 

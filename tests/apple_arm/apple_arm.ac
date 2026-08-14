@@ -1,0 +1,21 @@
+AC_ARCH(apple_arm) {
+  ac_mem DM:512M;            // 512 MB Unified Virtual Memory Space
+  ac_mem AMX_SRAM:16M;       // Apple AMX Matrix Coprocessor Local Scratchpad
+
+  ac_regbank X:32;           // 64-bit General Purpose Registers (X0-X30, XZR/SP)
+  ac_regbank V:32;           // 128-bit Vector / SIMD Neon Registers (V0-V31)
+  
+  ac_reg pc, pstate;         // Program Counter & Processor State (NZCV flags)
+  ac_reg pac_key_ia;         // Pointer Authentication Key IA (Instruction A)
+  ac_reg pac_key_da;         // Pointer Authentication Key DA (Data A)
+  ac_reg amx_state;          // Apple Matrix Coprocessor State Register
+  ac_reg tso_mode;           // Apple Silicon TSO Memory Model (Rosetta 2 support)
+
+  ac_wordsize 64;
+  ac_fetchsize 32;
+
+  ARCH_CTOR(apple_arm) {
+    ac_isa("apple_arm.isa");
+    set_endian("little");
+  };
+};

@@ -18,6 +18,7 @@ TESTS = [
     ("ESP32-C3 (RISC-V)", "tests/esp32c3", "esp32c3_test_gen.py"),
     ("STM32F103 (Cortex-M3)", "tests/stm32", "stm32_test_gen.py"),
     ("Nordic nRF52 (BLE/ULP)", "tests/nrf52", "nrf52_test_gen.py"),
+    ("Apple Silicon ARM64e", "tests/apple_arm", "apple_arm_test_gen.py"),
     ("Motorola 68000 (m68k)", "tests/m68k", "m68k_test_gen.py"),
     ("MOS 6502 (NES/Apple)", "tests/m6502", "m6502_test_gen.py"),
     ("Atmel AVR (Arduino)", "tests/avr", "avr_test_gen.py"),

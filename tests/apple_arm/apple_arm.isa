@@ -1,0 +1,86 @@
+AC_ISA(apple_arm) {
+  ac_format Type_DP_Reg      = "%op:8 %opt:3 %rm:5 %subop:6 %rn:5 %rd:5";
+  ac_format Type_DP_Imm      = "%op:8 %imm14:14 %rn:5 %rd:5";
+  ac_format Type_LS_Imm      = "%op:8 %disp:14:s %rn:5 %rd:5";
+  ac_format Type_PAC         = "%op:8 %pac_op:8 %rn:5 %subop:6 %rd:5";
+  ac_format Type_Branch_Cond = "%op:8 %imm19:19:s %o:1 %cond:4";
+  ac_format Type_Branch_Imm  = "%op:8 %imm24:24:s";
+  ac_format Type_Halt        = "%op:8 %pad:24";
+
+  ac_instr<Type_DP_Reg>      add_x, sub_x, and_x, eor_x, orr_x, mul_x, amx_fma;
+  ac_instr<Type_DP_Imm>      add_imm, subs_imm, movz_imm;
+  ac_instr<Type_LS_Imm>      ldr_x, str_x;
+  ac_instr<Type_PAC>         pacia, autia, pacda, autda;
+  ac_instr<Type_Branch_Cond> b_cond;
+  ac_instr<Type_Branch_Imm>  b_imm, bl_imm;
+  ac_instr<Type_Halt>        halt;
+
+  ac_asm_map reg {
+    "x"[0..30] = [0..30];
+    "xzr" = 31;
+    "sp" = 31;
+    "lr" = 30;
+  }
+
+  ISA_CTOR(apple_arm) {
+    add_x.set_asm("add x%rd, x%rn, x%rm");
+    add_x.set_decoder(op = 0x8B);
+
+    sub_x.set_asm("sub x%rd, x%rn, x%rm");
+    sub_x.set_decoder(op = 0xCB);
+
+    and_x.set_asm("and x%rd, x%rn, x%rm");
+    and_x.set_decoder(op = 0x8A);
+
+    orr_x.set_asm("orr x%rd, x%rn, x%rm");
+    orr_x.set_decoder(op = 0xAA);
+
+    eor_x.set_asm("eor x%rd, x%rn, x%rm");
+    eor_x.set_decoder(op = 0xCA);
+
+    mul_x.set_asm("mul x%rd, x%rn, x%rm");
+    mul_x.set_decoder(op = 0x9B);
+
+    amx_fma.set_asm("amx_fma x%rd, x%rn, x%rm");
+    amx_fma.set_decoder(op = 0x7E);
+
+    add_imm.set_asm("add x%rd, x%rn, #%imm14");
+    add_imm.set_decoder(op = 0x91);
+
+    subs_imm.set_asm("subs x%rd, x%rn, #%imm14");
+    subs_imm.set_decoder(op = 0xF1);
+
+    movz_imm.set_asm("movz x%rd, #%imm14");
+    movz_imm.set_decoder(op = 0xD2, rn = 31);
+
+    ldr_x.set_asm("ldr x%rd, [x%rn, #%disp]");
+    ldr_x.set_decoder(op = 0xF9);
+
+    str_x.set_asm("str x%rd, [x%rn, #%disp]");
+    str_x.set_decoder(op = 0xF8);
+
+    pacia.set_asm("pacia x%rd, x%rn");
+    pacia.set_decoder(op = 0xDA, pac_op = 0x01);
+
+    autia.set_asm("autia x%rd, x%rn");
+    autia.set_decoder(op = 0xDA, pac_op = 0x05);
+
+    pacda.set_asm("pacda x%rd, x%rn");
+    pacda.set_decoder(op = 0xDA, pac_op = 0x02);
+
+    autda.set_asm("autda x%rd, x%rn");
+    autda.set_decoder(op = 0xDA, pac_op = 0x06);
+
+    b_cond.set_asm("b.%cond %imm19");
+    b_cond.set_decoder(op = 0x54, o = 0);
+
+    b_imm.set_asm("b %imm24");
+    b_imm.set_decoder(op = 0x14);
+
+    bl_imm.set_asm("bl %imm24");
+    bl_imm.set_decoder(op = 0x94);
+
+    halt.set_asm("halt");
+    halt.set_decoder(op = 0x7F);
+  };
+};
